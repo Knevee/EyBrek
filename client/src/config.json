@@ -1,0 +1,7 @@
+{
+  "servidorUrl": "http://DESKTOP-CTLL6OH:3000/api",
+  "servidorUrlAlternativo": "http://127.0.0.1:3000/api",
+  "servidorUrlRespaldo": "http://192.168.0.12:3000/api",
+  "tiempoEsperaPeticionMs": 8000,
+  "tiempoEsperaDeteccionMs": 2000
+}

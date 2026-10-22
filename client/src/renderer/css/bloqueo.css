@@ -1,0 +1,344 @@
+/* =====================================================================
+   EyBrek - Pantalla de bloqueo
+   Replica las Figuras 6 y 7 del documento de diseno: el momento de la
+   pausa y la pantalla de ejercicios para los ojos.
+   ===================================================================== */
+
+:root {
+  --morado: #4f4e80;
+  --morado-medio: #6b6899;
+  --morado-claro: #9790bb;
+  --morado-tenue: #b9b4d4;
+  --crema: #fdf9ee;
+  --crema-borde: #ece3cf;
+  --lavanda: #e6e2f6;
+  --lavanda-oscuro: #6f6b96;
+  --amarillo: #f6e5a4;
+  --verde: #cfe3c4;
+  --rosa: #f4d8e0;
+  --texto: #2a2a33;
+  --texto-suave: #5d5d68;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Patrick Hand', 'Comic Sans MS', 'Segoe UI', sans-serif;
+  color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+.icono {
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bloqueo {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ---- Panel izquierdo ------------------------------------------------ */
+
+.panel-descanso {
+  flex: 1 1 48%;
+  background: linear-gradient(150deg, var(--morado) 0%, var(--morado-medio) 55%, var(--morado-claro) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-descanso::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.10), transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 46%);
+  pointer-events: none;
+}
+
+.panel-contenido {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  max-width: 460px;
+}
+
+.icono-grande {
+  width: 62px;
+  height: 62px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-bottom: 2px;
+}
+
+.etiqueta {
+  margin: 0;
+  font-size: 20px;
+  opacity: 0.95;
+}
+
+.reloj {
+  margin: 0;
+  font-size: 84px;
+  line-height: 1;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fecha {
+  margin: 0;
+  font-size: 17px;
+  opacity: 0.85;
+}
+
+.chip-fin {
+  margin: 6px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 17px;
+}
+
+.lema {
+  margin: 10px 0 0;
+  font-size: 19px;
+  line-height: 1.35;
+  opacity: 0.95;
+}
+
+.restante {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.78;
+  font-variant-numeric: tabular-nums;
+}
+
+.gato {
+  margin-top: 4px;
+}
+
+.gato img {
+  width: 210px;
+  height: auto;
+  filter: drop-shadow(0 10px 18px rgba(25, 20, 50, 0.28));
+}
+
+/* ---- Panel derecho -------------------------------------------------- */
+
+.panel-ejercicio {
+  flex: 1 1 52%;
+  background: linear-gradient(200deg, #6e6a9c 0%, #8b82ae 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+}
+
+.tarjeta-ejercicio {
+  width: 100%;
+  max-width: 560px;
+  background: var(--crema);
+  border-radius: 22px;
+  border: 1px solid var(--crema-borde);
+  padding: 26px 30px 28px;
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(30, 25, 60, 0.28);
+}
+
+.sprout {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 4px;
+}
+
+.sprout svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: #6f9e5c;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tarjeta-ejercicio h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.subtitulo {
+  margin: 8px auto 0;
+  max-width: 380px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--texto-suave);
+}
+
+.divisor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 10px;
+  color: var(--morado);
+}
+
+.divisor::before,
+.divisor::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--lavanda);
+}
+
+.corazon {
+  font-size: 13px;
+}
+
+.contador {
+  margin: 0;
+  font-size: 16px;
+  color: var(--texto-suave);
+}
+
+.temporizador {
+  margin: 2px 0 4px;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--morado);
+  font-variant-numeric: tabular-nums;
+}
+
+.titulo-ejercicio {
+  margin: 6px 0 0;
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.instrucciones {
+  margin: 8px auto 0;
+  max-width: 400px;
+  font-size: 18px;
+  line-height: 1.35;
+  color: var(--texto-suave);
+}
+
+.siguiente {
+  margin: 12px 0 0;
+  font-size: 16px;
+  color: var(--lavanda-oscuro);
+}
+
+.progreso {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin: 12px 0 4px;
+}
+
+.progreso span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--lavanda);
+}
+
+.progreso span.activo {
+  background: var(--lavanda-oscuro);
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(230, 226, 246, 0.42);
+}
+
+.item.actual {
+  border-color: var(--lavanda-oscuro);
+  background: rgba(230, 226, 246, 0.85);
+}
+
+.item-icono {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--texto);
+  flex: 0 0 auto;
+}
+
+.item-cuerpo h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.item-cuerpo p {
+  margin: 3px 0 0;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--texto-suave);
+}
+
+.consejo {
+  margin: 14px 0 0;
+  font-size: 16px;
+  color: var(--lavanda-oscuro);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .reloj { font-size: 60px; }
+  .gato img { width: 150px; }
+  .lista { grid-template-columns: 1fr; }
+}
