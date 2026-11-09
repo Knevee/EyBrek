@@ -73,8 +73,17 @@ function ventanaDeHorario(fecha, horaInicio, horaFin) {
 }
 
 class Temporizador extends EventEmitter {
-  constructor() {
+  /**
+   * @param {object} [opciones]
+   * @param {Function} [opciones.obtenerInactividadSegundos] Segundos que
+   *   lleva el equipo sin uso. Si alcanzan la duracion del descanso, la
+   *   persona ya descanso y el conteo vuelve a empezar.
+   * @param {Function} [opciones.reloj] Devuelve la hora actual (pruebas).
+   */
+  constructor(opciones = {}) {
     super();
+    this.obtenerInactividadSegundos = opciones.obtenerInactividadSegundos || null;
+    this.ahora = opciones.reloj || (() => new Date());
     this.configuracion = null;
     this.sesionActiva = false;
     this.bloqueando = false;
@@ -93,7 +102,7 @@ class Temporizador extends EventEmitter {
   iniciar(configuracion) {
     this.configuracion = configuracion;
     this.sesionActiva = true;
-    this.inicioSesion = new Date();
+    this.inicioSesion = this.ahora();
     this.reiniciar();
     this.arrancarReloj();
   }
@@ -112,7 +121,7 @@ class Temporizador extends EventEmitter {
   reiniciar() {
     this.bloqueando = false;
     this.avisoEnviado = false;
-    this.inicioCiclo = new Date();
+    this.inicioCiclo = this.ahora();
 
     if (this.configuracion) {
       this.proximoBloqueo = new Date(
@@ -137,8 +146,22 @@ class Temporizador extends EventEmitter {
   /** Minutos que faltan para el proximo bloqueo (null si no aplica). */
   minutosParaElProximoBloqueo() {
     if (!this.proximoBloqueo) return null;
-    const faltante = this.proximoBloqueo.getTime() - Date.now();
+    const faltante = this.proximoBloqueo.getTime() - this.ahora().getTime();
     return Math.max(0, Math.ceil(faltante / MINUTO));
+  }
+
+  /** Indica si el descanso empieza en menos de un minuto. */
+  descansoInminente() {
+    if (!this.sesionActiva || !this.proximoBloqueo) return false;
+    if (!this.configuracion || !this.configuracion.bloqueo_activo) return false;
+    return this.proximoBloqueo.getTime() - this.ahora().getTime() <= MINUTO;
+  }
+
+  /** La persona lleva sin usar el equipo al menos lo que dura un descanso. */
+  yaDescanso() {
+    if (!this.obtenerInactividadSegundos || !this.configuracion) return false;
+    const inactividad = Number(this.obtenerInactividadSegundos()) || 0;
+    return inactividad * SEGUNDO >= this.configuracion.duracion_minutos * MINUTO;
   }
 
   arrancarReloj() {
@@ -159,7 +182,7 @@ class Temporizador extends EventEmitter {
     if (this.bloqueando) return;
     if (!this.configuracion.bloqueo_activo) return;
 
-    const ahora = new Date();
+    const ahora = this.ahora();
     const ventana = ventanaDeHorario(
       ahora,
       this.configuracion.hora_inicio,
@@ -183,6 +206,13 @@ class Temporizador extends EventEmitter {
       this.proximoBloqueo = new Date(
         base + this.configuracion.intervalo_minutos * MINUTO
       );
+    }
+
+    // Si la persona estuvo lejos del equipo lo que dura un descanso, ese
+    // tiempo cuenta como pausa: el intervalo empieza de nuevo.
+    if (this.yaDescanso()) {
+      this.reiniciar();
+      return;
     }
 
     if (ahora.getTime() >= this.proximoBloqueo.getTime()) {

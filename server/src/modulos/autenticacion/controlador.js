@@ -7,6 +7,7 @@
 
 const servicio = require('./servicio');
 const manejador = require('../../middlewares/manejador');
+const { leerToken } = require('../../middlewares/requiereSesion');
 
 /** POST /api/auth/registro */
 const registrar = manejador(async (peticion, respuesta) => {
@@ -36,9 +37,7 @@ const iniciarSesion = manejador(async (peticion, respuesta) => {
 
 /** POST /api/auth/cerrar-sesion */
 const cerrarSesion = manejador(async (peticion, respuesta) => {
-  const token = (peticion.headers.authorization || '').replace('Bearer ', '').trim();
-
-  await servicio.cerrarSesion(token);
+  await servicio.cerrarSesion(leerToken(peticion));
 
   respuesta.json({
     ok: true,

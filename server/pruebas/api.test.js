@@ -16,6 +16,8 @@ const request = require('supertest');
 const crearAplicacion = require('../src/app');
 const db = require('../src/db/conexion');
 const usuarios = require('../src/modulos/acceso-a-datos/usuarios');
+const entorno = require('../src/config/entorno');
+const limitarIntentos = require('../src/middlewares/limitarIntentos');
 
 const app = crearAplicacion();
 
@@ -145,6 +147,32 @@ describe('API de EyBrek', () => {
       .expect(401);
 
     assert.match(respuesta.body.error, /sesion/i);
+  });
+
+  test('Seguridad: el token no se acepta en la URL', async () => {
+    await request(app).get(`/api/configuracion?token=${token}`).expect(401);
+  });
+
+  test('Seguridad: la base guarda el hash del token, no el token', async () => {
+    const filas = await db.consultar('SELECT token FROM Sesion WHERE token = ?', [token]);
+    assert.equal(filas.length, 0);
+  });
+
+  test('Seguridad: bloquea tras demasiados intentos fallidos', async () => {
+    const victima = `limite${aleatorio()}@eybrek.com`;
+    for (let i = 0; i < entorno.intentos.maximo; i += 1) {
+      await request(app)
+        .post('/api/auth/iniciar-sesion')
+        .send({ correo: victima, contrasena: 'incorrecta' })
+        .expect(401);
+    }
+
+    await request(app)
+      .post('/api/auth/iniciar-sesion')
+      .send({ correo: victima, contrasena: 'incorrecta' })
+      .expect(429);
+
+    limitarIntentos.reiniciar();
   });
 
   // ---- Configuracion ------------------------------------------------

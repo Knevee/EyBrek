@@ -9,26 +9,25 @@ verdad. Durante la pausa te muestra un ejercicio visual guiado.
 
 ### 1.1. Lo único que necesitas
 
-**Node.js 18 o superior**, descargado de <https://nodejs.org>.
-
-No hace falta instalar MySQL, ni Workbench, ni crear usuarios, ni escribir
-contraseñas de base de datos: **la base de datos de EyBrek es un archivo que
-se crea solo** en el primer arranque.
+El archivo **`EyBrek-Instalador-1.0.0.exe`** (en la carpeta `client\dist`).
+No hace falta instalar Node.js, MySQL ni ningún servidor: las cuentas se
+guardan en la nube (Supabase).
 
 ### 1.2. Puesta en marcha
 
-1. Descarga o copia la carpeta `EyBrek`.
-2. Doble clic en **`iniciar-servidor.bat`**. Se abre una ventana de consola
-   con el servidor andando. Déjala abierta.
-3. Doble clic en **`iniciar-cliente.bat`**. Se abre la aplicación.
+1. Doble clic en **`EyBrek-Instalador-1.0.0.exe`**. Si Windows muestra
+   «Windows protegió su PC», elige **Más información → Ejecutar de todas formas**.
+2. EyBrek se instala solo, crea un acceso directo en el escritorio y en el
+   menú Inicio, y se abre.
+3. Desde entonces arranca solo con Windows y queda en la bandeja del sistema.
 4. En la aplicación, presiona **Regístrate** y crea tu cuenta con nombre,
-   correo y contraseña (mínimo 6 caracteres).
+   correo y contraseña (mínimo 8 caracteres).
 5. Inicia sesión. EyBrek aplica la **configuración por defecto**: bloqueo
    activado, cada 2 horas, 15 minutos de duración, horario de 8:00 a. m. a
    9:00 p. m. y notificaciones activadas.
 
-> La primera vez, los dos lanzadores instalan las dependencias por su cuenta.
-> Puede tardar un momento y necesita conexión a internet.
+> Si la confirmación por correo está activa en Supabase, revisa tu correo y
+> confirma la cuenta antes de iniciar sesión.
 
 ![Pantalla de inicio de sesión](imagenes/pantalla-inicio-sesion.png)
 
@@ -88,12 +87,15 @@ Cuando se cumple el intervalo, la pantalla se bloquea:
 
 ![Pantalla de bloqueo](imagenes/pantalla-bloqueo.png)
 
-- **A la izquierda** verás la hora actual, la hora en que termina el descanso
-  y cuánto falta para desbloquearte.
-- **A la derecha** está el ejercicio de la vista: su nombre, las instrucciones
-  y el temporizador de 20 segundos que marca el ritmo.
-- Debajo está la lista de los 4 ejercicios del catálogo; el que estás haciendo
-  aparece resaltado.
+La pausa pasa por dos pantallas:
+
+1. **Descanso** (gato dormido): a la izquierda verás la hora actual, la fecha
+   y la hora en que termina el descanso; a la derecha, cuatro consejos para tu
+   vista (si tienes activados los *Consejos en pantalla*).
+2. **Ejercicios para tus ojos** (gato con gafas): unos segundos después
+   empiezan los 4 ejercicios, 20 segundos cada uno. A la izquierda está el
+   temporizador y a la derecha la lista; el ejercicio que estás haciendo
+   aparece resaltado. Al terminarlos vuelves a la pantalla de descanso.
 
 La pausa **no se puede omitir**. Cuando termina el tiempo configurado, la
 pantalla se desbloquea sola y el conteo del intervalo empieza de nuevo.
@@ -115,8 +117,8 @@ el servidor, así que cada persona tiene su propia rotación.
 
 ### Un servidor para todos (recomendado si están en la misma red)
 
-1. Una persona levanta el servidor en su equipo: `iniciar-servidor.bat`.
-2. Las demás copian la carpeta `client/` y ejecutan `iniciar-cliente.bat`.
+1. Una persona levanta el servidor en su equipo: `npm start` en `server/`.
+2. Las demás copian la carpeta `client/` y ejecutan `npm start`.
 3. Las demás se registran con su propio correo y contraseña.
 
 Cada persona tiene su cuenta en el servidor del equipo, así que su
@@ -165,7 +167,7 @@ aviso: la aplicación simplemente funciona.
 
 **"No se pudo conectar con el servidor de EyBrek".**
 Ocurre al iniciar sesión si no hay ningún servidor al alcance. Si su equipo
-tiene el suyo, abra `iniciar-servidor.bat`. Si comparte el de otra persona,
+tiene el suyo, abra `npm start` en `server/`. Si comparte el de otra persona,
 revise que la dirección de `config.json` sea la correcta y que ambos estén
 en la misma red.
 

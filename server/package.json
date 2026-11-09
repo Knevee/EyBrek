@@ -2,7 +2,7 @@
   "name": "eybrek-server",
   "version": "1.0.0",
   "private": true,
-  "description": "EyBrek - Servidor de autenticacion, configuracion y ejercicios (Node.js + Express + MySQL)",
+  "description": "EyBrek - Servidor de autenticacion, configuracion y ejercicios (Node.js + Express + SQLite o MySQL)",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mysql2": "^3.11.5"
   },
   "devDependencies": {
     "supertest": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=22.5.0"
   }
 }

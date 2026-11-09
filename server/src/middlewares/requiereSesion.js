@@ -10,12 +10,16 @@ const manejador = require('./manejador');
 const sesiones = require('../modulos/acceso-a-datos/sesiones');
 const ErrorNoAutorizado = require('../errores/ErrorNoAutorizado');
 
+/**
+ * El token solo se acepta en la cabecera: en la URL quedaria escrito en
+ * los registros del servidor.
+ */
 function leerToken(peticion) {
   const cabecera = peticion.headers.authorization || '';
   if (cabecera.startsWith('Bearer ')) {
-    return cabecera.slice(7).trim();
+    return cabecera.slice(7).trim() || null;
   }
-  return peticion.query.token || null;
+  return null;
 }
 
 const requiereSesion = manejador(async (peticion, _respuesta, siguiente) => {
@@ -37,3 +41,4 @@ const requiereSesion = manejador(async (peticion, _respuesta, siguiente) => {
 });
 
 module.exports = requiereSesion;
+module.exports.leerToken = leerToken;

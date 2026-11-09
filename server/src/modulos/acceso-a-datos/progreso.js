@@ -30,8 +30,13 @@ async function crear(idUsuario) {
   return leerPorUsuario(idUsuario);
 }
 
-/** Guarda el ultimo ejercicio que se mostro. */
+/**
+ * Guarda el ultimo ejercicio que se mostro. Si el usuario todavia no
+ * tiene registro de progreso, se crea: asi Autenticacion no necesita
+ * conocer la rotacion de ejercicios.
+ */
 async function guardarUltimo(idUsuario, idEjercicio) {
+  await crear(idUsuario);
   await db.ejecutar(
     'UPDATE ProgresoRotacion SET id_ultimo_ejercicio = ? WHERE id_usuario = ?',
     [idEjercicio, idUsuario]

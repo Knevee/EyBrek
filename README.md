@@ -11,23 +11,39 @@ segundo corte*, Diseño de Software I, UDES), que está en
 
 ---
 
-## 1. Instalación en 30 segundos
+## 1. Instalación
+
+Doble clic en **`client\dist\EyBrek-Instalador-1.0.0.exe`**. EyBrek se instala,
+crea accesos directos en el escritorio y en el menú Inicio, y usa el servidor
+en la nube (Supabase). No hace falta instalar nada más.
+
+### Para desarrollar (desde el código fuente)
+
+Requisitos: **Node.js 22.5 o superior** y Windows 10 u 11.
 
 ```powershell
-# 1. Instalar el servidor (la base de datos se crea sola)
-cd EyBrek
-.\iniciar-servidor.bat
+# Abrir la aplicación desde el código
+cd EyBrek\client
+npm install
+npm start
 
-# 2. Instalar el cliente
-.\iniciar-cliente.bat
+# Solo si se usa el servidor propio ("modo": "local" en client/src/config.json)
+cd EyBrek\server
+npm install
+npm start
 ```
 
-**No hace falta instalar MySQL, ni crear usuarios, ni escribir contraseñas.**
-La base de datos es un archivo (`server/datos/eybrek.db`) que se crea solo en
-el primer arranque.
+Con el servidor propio no hace falta instalar MySQL: la base de datos es un
+archivo (`server/datos/eybrek.db`) que se crea solo. MySQL es opcional (ver la
+sección 6).
 
-Requisitos: **Node.js 18 o superior** y Windows 10 u 11. MySQL es opcional
-(ver la sección 6).
+---
+
+### Versión en la nube e instalador
+
+EyBrek también puede usar **Supabase** como servidor en la nube y se
+distribuye como **instalador de Windows** (`EyBrek-Instalador-1.0.0.exe`).
+Los pasos están en [`docs/nube-e-instalador.md`](docs/nube-e-instalador.md).
 
 ---
 
@@ -65,13 +81,9 @@ disponible (RNF-05), sin avisar al usuario.
 
 ```
 EyBrek/
-├── iniciar-cliente.bat          Doble clic para abrir la aplicación
-├── iniciar-servidor.bat         Doble clic para levantar el servidor
-│
 ├── database/                    Esquema de la base de datos
 │   ├── 01_esquema_mysql.sql     Tablas (solo si se usa MySQL)
 │   ├── 02_datos_iniciales.sql   Catálogo inicial de 4 ejercicios
-│   ├── 03_datos_iniciales.sql   (SQLite: se siembran solos)
 │   ├── esquema-completo.sql     Para importar en MySQL Workbench
 │   └── instalar-base-datos.ps1  Instalador de MySQL (opcional)
 │
@@ -92,7 +104,7 @@ EyBrek/
 │   │       ├── configuracion/    Configuración (servidor)
 │   │       ├── ejercicios/       Ejercicios (servidor)
 │   │       └── acceso-a-datos/   Acceso a datos (servidor)
-│   ├── pruebas/api.test.js       19 pruebas automáticas (node:test)
+│   ├── pruebas/api.test.js       22 pruebas automáticas (node:test)
 │   ├── datos/eybrek.db           La base de datos SQLite (se crea sola)
 │   └── .env.example              Plantilla de configuración
 │
@@ -189,9 +201,9 @@ en este equipo.
 
 Un solo equipo levanta el servidor y los demás solo instalan el cliente.
 
-1. En el equipo del servidor: `iniciar-servidor.bat`.
+1. En el equipo del servidor: `npm start` en la carpeta `server/`.
 2. En cada equipo cliente: copiar la carpeta `client/` y ejecutar
-   `iniciar-cliente.bat`.
+   `npm start`.
 3. La dirección del servidor está en `client/src/config.json`:
 
    ```json
@@ -233,8 +245,12 @@ Para presentar la aplicación en un lugar sin ninguna de estas redes, use el
 ## 7. Pruebas
 
 ```powershell
-# Pruebas automáticas del servidor (19 casos)
+# Pruebas automáticas del servidor (22 casos)
 cd EyBrek\server
+npm run pruebas
+
+# Pruebas del temporizador del cliente (8 casos)
+cd ..\client
 npm run pruebas
 
 # Verificación completa de la API contra el servidor en marcha (25 comprobaciones)
@@ -298,6 +314,28 @@ Estas decisiones complementan el documento de diseño:
     Windows permite siempre abrir el Administrador de tareas o usar
     `Ctrl + Alt + Del`. Esta limitación ya está reconocida en las secciones
     4.9 y 4.10 del documento.
+11. **Todas las pantallas.** El descanso cubre cada monitor conectado (y los
+    que se conecten durante la pausa). La pantalla principal muestra el
+    ejercicio; las demás, solo el descanso.
+12. **Sin salidas durante el descanso.** Mientras dura la pausa, y en el
+    minuto previo, la bandeja no permite «Salir» ni «Cerrar sesión», y la
+    aplicación ignora los intentos de cerrarse. Solo el proceso principal
+    decide cuándo termina el bloqueo; la ventana de descanso usa su propio
+    preload, con acceso únicamente a sus datos.
+13. **Arranque con Windows.** EyBrek se registra para iniciar con la sesión
+    de Windows (oculto en la bandeja). Se puede desactivar poniendo
+    `"iniciarConWindows": false` en `ajustes-local.json`.
+14. **Ausencias cuentan como descanso.** Si el equipo estuvo sin uso,
+    suspendido o con la sesión de Windows bloqueada al menos lo que dura un
+    descanso, el conteo del intervalo vuelve a empezar en lugar de bloquear
+    apenas la persona regresa.
+15. **Ejercicios guiados.** Durante la pausa los ejercicios avanzan uno a uno
+    (30 s cada uno), empezando por el que toca en la rotación. Sin servidor,
+    la rotación sigue en el equipo con el catálogo guardado.
+16. **Seguridad de la API.** Las sesiones duran 90 días (`SESION_DIAS`), en la
+    base se guarda el hash SHA-256 del token, el token solo se acepta en la
+    cabecera `Authorization`, el inicio de sesión se bloquea 15 min tras 10
+    intentos fallidos y la contraseña mínima es de 8 caracteres.
 
 ---
 

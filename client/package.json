@@ -6,12 +6,54 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --dev"
+    "dev": "electron . --dev",
+    "pruebas": "node --test pruebas/temporizador.test.js",
+    "empaquetar": "electron-builder --win nsis",
+    "empaquetar:carpeta": "electron-builder --win dir"
   },
   "dependencies": {
-    "@fontsource/patrick-hand": "^5.1.0"
+    "@fontsource/patrick-hand": "^5.1.0",
+    "@supabase/supabase-js": "2.118.0",
+    "ws": "8.22.0"
   },
   "devDependencies": {
-    "electron": "^33.2.0"
+    "electron": "^33.2.0",
+    "electron-builder": "26.17.0"
+  },
+  "author": "Josué Herrera Quintero y María José Herrera Bonilla",
+  "build": {
+    "appId": "co.edu.udes.eybrek",
+    "productName": "EyBrek",
+    "copyright": "EyBrek - Proyecto de aula, Diseño de Software I, UDES",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icono.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "EyBrek",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "EyBrek-Instalador-${version}.${ext}"
+    }
   }
 }

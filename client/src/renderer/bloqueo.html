@@ -8,30 +8,23 @@
   <link rel="stylesheet" href="../../node_modules/@fontsource/patrick-hand/latin-400.css" />
   <link rel="stylesheet" href="css/bloqueo.css" />
 </head>
-<body>
+<body class="fase-descanso">
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-ojo" viewBox="0 0 24 24">
-      <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6Z" />
-      <circle cx="12" cy="12" r="2.6" />
-      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2" />
+      <path d="M2.5 12s3.6-5.5 9.5-5.5 9.5 5.5 9.5 5.5-3.6 5.5-9.5 5.5S2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.8" />
     </symbol>
-    <symbol id="i-sol" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6" />
+    <symbol id="i-parpado" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="12" rx="8" ry="4" />
     </symbol>
-    <symbol id="i-circulos" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 4a8 8 0 0 1 0 16" stroke-width="3" />
-    </symbol>
-    <symbol id="i-manos" viewBox="0 0 24 24">
-      <path d="M4 13c0-2 1-3 2.5-3S9 11 9 13v3.5c0 2-1.4 3.5-3.2 3.5S4 18.5 4 16.5V13Z" />
-      <path d="M9 13c0-2 1-3 2.5-3S14 11 14 13v3c0 2-1.4 3.5-3.2 3.5S9 18 9 16V13Z" />
-      <path d="M14 13c0-2 1-3 2.5-3S19 11 19 13v3c0 2-1.4 3.5-3.2 3.5S14 18 14 16V13Z" />
+    <symbol id="i-persona" viewBox="0 0 24 24">
+      <circle cx="12" cy="4.8" r="2.3" />
+      <path d="M12 7.5v7M6 9.5l6 1.5 6-1.5M12 14.5l-4 6M12 14.5l4 6" />
     </symbol>
     <symbol id="i-corazon" viewBox="0 0 24 24">
-      <path d="M12 20.5S3.5 15.5 3.5 9.4A4.9 4.9 0 0 1 12 6.3a4.9 4.9 0 0 1 8.5 3.1c0 6.1-8.5 11.1-8.5 11.1Z" />
+      <path d="M12 19.5S4.5 15 4.5 9.6A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7.5 2.6c0 5.4-7.5 9.9-7.5 9.9Z" />
     </symbol>
     <symbol id="i-reloj" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="9" />
@@ -41,58 +34,78 @@
 </svg>
 
 <main class="bloqueo">
-  <!-- ---- Columna izquierda: el descanso ---- -->
-  <section class="panel-descanso">
-    <div class="panel-contenido">
-      <svg class="icono-grande"><use href="#i-ojo"></use></svg>
+  <!-- ---- Columna izquierda, sobre el degradado ---- -->
+  <section class="columna-izquierda">
+    <svg class="ojo-rayos" viewBox="0 0 64 44" aria-hidden="true">
+      <path class="rayos" d="M32 3v6M19 7l3 5M45 7l-3 5M9 14l4 3M55 14l-4 3" />
+      <path class="contorno" d="M10 30s9-10 22-10 22 10 22 10-9 10-22 10-22-10-22-10Z" />
+      <circle class="iris" cx="32" cy="30" r="7" />
+      <circle class="pupila" cx="32" cy="30" r="3" />
+    </svg>
 
-      <p class="etiqueta" id="etiqueta-descanso">Es momento de una pausa</p>
-
+    <!-- Figura 6: momento de la pausa -->
+    <div class="solo-descanso columna-textos">
+      <p class="etiqueta">Es momento de una pausa</p>
       <p class="reloj" id="reloj">00:00</p>
-
       <p class="fecha" id="fecha"></p>
+      <p class="chip-fin" id="texto-fin">El descanso termina pronto</p>
+      <p class="lema">Descansa hoy,<br />para ver un mejor mañana</p>
+      <img class="gato" src="../../assets/gato-mimido.png" alt="Gato dormido sobre un cojín" />
+    </div>
 
-      <p class="chip-fin">
-        <svg class="icono"><use href="#i-reloj"></use></svg>
-        <span id="texto-fin">El descanso termina pronto</span>
-      </p>
-
-      <p class="lema" id="lema">Descansa hoy, para ver un mejor mañana</p>
-
-      <p class="restante" id="restante"></p>
-
-      <div class="gato">
-        <img src="../../assets/gato-mimido.png" alt="Gato descansando" />
-      </div>
+    <!-- Figura 7: ejercicios para los ojos -->
+    <div class="solo-ejercicios columna-textos">
+      <p class="etiqueta" id="contador">Ejercicios</p>
+      <p class="reloj" id="temporizador">00:20</p>
+      <p class="lema" id="consejo">Sin prisa, tus ojos lo agradecerán</p>
+      <img class="gato gato-gafas" src="../../assets/gato-gafas.png" alt="Gato con gafas sobre un cojín" />
     </div>
   </section>
 
-  <!-- ---- Columna derecha: el ejercicio ---- -->
-  <section class="panel-ejercicio">
-    <div class="tarjeta-ejercicio">
-      <span class="sprout" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 21c0-7 4-13 10-15 1 8-2 14-8 15Z" /><path d="M12 21C9 16 6 14 2 13" /></svg>
+  <!-- ---- Tarjeta crema de la derecha ---- -->
+  <section class="columna-derecha">
+    <div class="tarjeta">
+      <span class="brote" aria-hidden="true">
+        <svg viewBox="0 0 32 24"><path d="M16 22C15 14 10 8 4 6c-1 8 4 14 12 16Z" /><path d="M16 22c1-8 6-14 12-16 1 8-4 14-12 16Z" /></svg>
       </span>
 
-      <h1>Ejercicios para tus ojos</h1>
-      <p class="subtitulo">Sigue cada paso con calma y sin forzar la vista</p>
+      <!-- Figura 6 -->
+      <div class="solo-descanso">
+        <h1>Tus ojos también<br />se cansan.</h1>
+        <p class="subtitulo">Mira hacia un punto lejano, parpadea varias veces y respira profundo.</p>
+        <div class="divisor"><span>&#9829;</span></div>
 
-      <div class="divisor"><span class="corazon">&#9829;</span></div>
+        <div class="cuadricula" id="consejos-descanso">
+          <div class="celda">
+            <span class="circulo tono-lavanda"><svg class="icono"><use href="#i-ojo"></use></svg></span>
+            <h2>20-20-20</h2>
+            <p>Cada 20 min mira a 20 pies (6 metros) por 20 segundos.</p>
+          </div>
+          <div class="celda">
+            <span class="circulo tono-amarillo"><svg class="icono"><use href="#i-parpado"></use></svg></span>
+            <h2>Parpadea</h2>
+            <p>Mantén tus ojos hidratados.</p>
+          </div>
+          <div class="celda">
+            <span class="circulo tono-durazno"><svg class="icono"><use href="#i-persona"></use></svg></span>
+            <h2>Estírate</h2>
+            <p>Tu cuerpo también lo necesita.</p>
+          </div>
+          <div class="celda">
+            <span class="circulo tono-rosa"><svg class="icono"><use href="#i-corazon"></use></svg></span>
+            <h2>Cuídate</h2>
+            <p>Una vista sana también es productividad.</p>
+          </div>
+        </div>
+      </div>
 
-      <p class="contador" id="contador">Ejercicio 1 de 4</p>
-
-      <p class="temporizador" id="temporizador">00:20</p>
-
-      <h2 class="titulo-ejercicio" id="titulo-ejercicio">Cerca y lejos</h2>
-      <p class="instrucciones" id="instrucciones">Mira tu pulgar 5 segundos y luego algo lejano.</p>
-
-      <p class="siguiente" id="siguiente">Siguiente: Parpadeo</p>
-
-      <div class="progreso" id="progreso" aria-hidden="true"></div>
-
-      <div class="lista" id="lista"></div>
-
-      <p class="consejo" id="consejo" hidden></p>
+      <!-- Figura 7 -->
+      <div class="solo-ejercicios">
+        <h1>Ejercicios para tus ojos</h1>
+        <p class="subtitulo">Sigue cada paso con calma y sin forzar la vista</p>
+        <div class="divisor"><span>&#9829;</span></div>
+        <div class="cuadricula" id="lista"></div>
+      </div>
     </div>
   </section>
 </main>

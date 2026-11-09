@@ -39,6 +39,9 @@ const botonProbar = document.getElementById('boton-probar');
 const mensajeGuardado = document.getElementById('mensaje-guardado');
 const botonCerrarSesion = document.getElementById('boton-cerrar-sesion');
 
+const proximoDescanso = document.getElementById('proximo-descanso');
+const proximoDescansoTexto = document.getElementById('proximo-descanso-texto');
+
 const usuarioInicial = document.getElementById('usuario-inicial');
 const usuarioNombre = document.getElementById('usuario-nombre');
 const usuarioCorreo = document.getElementById('usuario-correo');
@@ -82,11 +85,11 @@ function mostrarConfirmacion(texto) {
 function actualizarFormularioAcceso() {
   if (modoRegistro) {
     tituloAcceso.textContent = 'Crea tu cuenta';
-    subtituloAcceso.textContent = 'Registrate para empezar a cuidar tu vista.';
+    subtituloAcceso.textContent = 'Regístrate para empezar a cuidar tu vista.';
     botonAcceso.querySelector('span').textContent = 'Crear cuenta';
     campoNombreContenedor.hidden = false;
     campoContrasena.setAttribute('autocomplete', 'new-password');
-    campoContrasena.placeholder = 'Mínimo 6 caracteres';
+    campoContrasena.placeholder = 'Contraseña (mínimo 8 caracteres)';
     textoAlternativo.textContent = '¿Ya tienes una cuenta?';
     alternarModo.textContent = 'Inicia sesión';
   } else {
@@ -95,7 +98,7 @@ function actualizarFormularioAcceso() {
     botonAcceso.querySelector('span').textContent = 'Iniciar sesión';
     campoNombreContenedor.hidden = true;
     campoContrasena.setAttribute('autocomplete', 'current-password');
-    campoContrasena.placeholder = '••••••••';
+    campoContrasena.placeholder = 'Contraseña';
     textoAlternativo.textContent = '¿No tienes una cuenta?';
     alternarModo.textContent = 'Regístrate';
   }
@@ -107,10 +110,13 @@ alternarModo.addEventListener('click', () => {
   actualizarFormularioAcceso();
 });
 
+// El ojo tachado indica que la contrasena esta oculta; al pulsarlo se muestra.
 verContrasena.addEventListener('click', () => {
-  const visible = campoContrasena.type === 'text';
-  campoContrasena.type = visible ? 'password' : 'text';
-  verContrasena.textContent = visible ? 'ver' : 'ocultar';
+  const mostrar = campoContrasena.type === 'password';
+  campoContrasena.type = mostrar ? 'text' : 'password';
+  verContrasena.setAttribute('aria-pressed', String(mostrar));
+  verContrasena.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  verContrasena.querySelector('use').setAttribute('href', mostrar ? '#i-ojo-simple' : '#i-ojo-tachado');
 });
 
 formularioAcceso.addEventListener('submit', async (evento) => {
@@ -211,6 +217,20 @@ chipsDuracion.addEventListener('click', (evento) => {
   marcarChipActivo();
 });
 
+// Toda la fila "Desde / Hasta" abre el selector de hora, no solo el texto.
+[campoHoraInicio, campoHoraFin].forEach((campo) => {
+  campo.closest('.fila-hora').addEventListener('click', () => {
+    try { campo.showPicker(); } catch { campo.focus(); }
+  });
+});
+
+/** "Ana Pérez" -> "AP"; un solo nombre -> su primera letra. */
+function iniciales(nombre) {
+  const partes = (nombre || '?').trim().split(/\s+/);
+  const letras = partes.length > 1 ? partes[0][0] + partes[partes.length - 1][0] : partes[0][0];
+  return letras.toUpperCase();
+}
+
 botonGuardar.addEventListener('click', async () => {
   mostrarConfirmacion('');
 
@@ -244,6 +264,7 @@ botonGuardar.addEventListener('click', async () => {
     llenarConfiguracion(respuesta.configuracion);
     mostrarConfirmacion(respuesta.mensaje);
     mensajeGuardado.classList.add('mensaje-ok');
+    pintarProximoDescanso();
   } finally {
     botonGuardar.disabled = false;
   }
@@ -252,7 +273,12 @@ botonGuardar.addEventListener('click', async () => {
 botonCerrarSesion.addEventListener('click', async () => {
   botonCerrarSesion.disabled = true;
   try {
-    await window.eybrek.cerrarSesion();
+    const respuesta = await window.eybrek.cerrarSesion();
+    if (!respuesta.ok) {
+      mostrarConfirmacion(respuesta.mensaje);
+      mensajeGuardado.classList.remove('mensaje-ok');
+      return;
+    }
     mostrarVista('acceso');
   } finally {
     botonCerrarSesion.disabled = false;
@@ -293,6 +319,42 @@ try {
 }
 
 // =====================================================================
+// Proximo descanso
+// =====================================================================
+
+/** Formatea una fecha como "4:15 p. m." */
+function hora12(fecha) {
+  const horas = fecha.getHours();
+  const minutos = String(fecha.getMinutes()).padStart(2, '0');
+  const sufijo = horas < 12 ? 'a. m.' : 'p. m.';
+  return `${horas % 12 === 0 ? 12 : horas % 12}:${minutos} ${sufijo}`;
+}
+
+/** Muestra cuando sera el proximo descanso, para que no tome por sorpresa. */
+async function pintarProximoDescanso() {
+  const estado = await window.eybrek.proximoDescanso();
+
+  if (!estado.activo) {
+    proximoDescanso.hidden = false;
+    proximoDescansoTexto.textContent = 'El bloqueo está desactivado.';
+    return;
+  }
+
+  if (!estado.proximo) {
+    proximoDescanso.hidden = false;
+    proximoDescansoTexto.textContent = 'Fuera de tu horario: no habrá descansos hasta la hora de inicio.';
+    return;
+  }
+
+  proximoDescanso.hidden = false;
+  proximoDescansoTexto.textContent = `Próximo descanso a las ${hora12(new Date(estado.proximo))}`;
+}
+
+setInterval(() => {
+  if (!vistaConfiguracion.hidden) pintarProximoDescanso();
+}, 30000);
+
+// =====================================================================
 // Estado que envia el proceso principal
 // =====================================================================
 
@@ -303,10 +365,11 @@ function aplicarEstado(datos) {
     if (datos.usuario) {
       usuarioNombre.textContent = datos.usuario.nombre;
       usuarioCorreo.textContent = datos.usuario.correo;
-      usuarioInicial.textContent = (datos.usuario.nombre || '?').trim().charAt(0).toUpperCase();
+      usuarioInicial.textContent = iniciales(datos.usuario.nombre);
     }
     if (datos.configuracion) llenarConfiguracion(datos.configuracion);
     mostrarVista('configuracion');
+    pintarProximoDescanso();
   } else {
     mostrarVista('acceso');
   }

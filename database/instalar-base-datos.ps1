@@ -3,7 +3,7 @@
 #
 #  El servidor de EyBrek usa SQLite por defecto: la base de datos es un
 #  archivo que se crea solo, sin instalar MySQL, sin usuarios y sin
-#  contrasenas.  Si ya corriste "iniciar-servidor.bat", no necesitas
+#  contrasenas.  Si ya corriste "npm start" en server, no necesitas
 #  nada de este script.
 #
 #  Use este script solo si quiere MySQL, por ejemplo para tener una base
@@ -52,7 +52,7 @@ if (-not $mysql) {
   Escribir '  se crea sola, sin contrasenas y sin instalar nada.'
   Escribir ''
   Escribir '  Para empezar ahora mismo, cierre esta ventana y ejecute'
-  Escribir '  "iniciar-servidor.bat".' -ForegroundColor Green
+  Escribir '  "npm start" en server.' -ForegroundColor Green
   Escribir ''
   exit 0
 }
@@ -233,5 +233,5 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 Escribir ''
-Escribir '  Listo. Ahora ejecute "iniciar-servidor.bat".' -ForegroundColor Green
+Escribir '  Listo. Ahora ejecute "npm start" en server.' -ForegroundColor Green
 Escribir ''

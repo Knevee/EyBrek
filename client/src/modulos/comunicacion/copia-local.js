@@ -17,6 +17,7 @@ const ARCHIVO_CONFIGURACION = 'config-local.json';
 const ARCHIVO_SESION = 'sesion-local.json';
 const ARCHIVO_EJERCICIO = 'ejercicio-local.json';
 const ARCHIVO_AJUSTES = 'ajustes-local.json';
+const ARCHIVO_CATALOGO = 'catalogo-local.json';
 
 function rutaArchivo(nombre) {
   return path.join(app.getPath('userData'), nombre);
@@ -96,6 +97,19 @@ function leerUltimoEjercicio() {
   return leer(ARCHIVO_EJERCICIO);
 }
 
+// ---- Catalogo de ejercicios -----------------------------------------
+
+/** Guarda el catalogo, para seguir la rotacion sin servidor. */
+function guardarCatalogo(catalogo) {
+  if (!Array.isArray(catalogo) || catalogo.length === 0) return false;
+  return escribir(ARCHIVO_CATALOGO, catalogo);
+}
+
+/** Lee el catalogo guardado (null si no hay). */
+function leerCatalogo() {
+  return leer(ARCHIVO_CATALOGO);
+}
+
 // ---- Ajustes locales de la pantalla ----------------------------------
 
 /** Guarda un ajuste local (por ejemplo, mostrar consejos). */
@@ -119,6 +133,8 @@ module.exports = {
   borrarSesion,
   guardarUltimoEjercicio,
   leerUltimoEjercicio,
+  guardarCatalogo,
+  leerCatalogo,
   guardarAjuste,
   leerAjuste,
 };

@@ -1,23 +1,25 @@
 /* =====================================================================
    EyBrek - Pantalla de bloqueo
    Replica las Figuras 6 y 7 del documento de diseno: el momento de la
-   pausa y la pantalla de ejercicios para los ojos.
+   pausa (gato dormido) y los ejercicios para los ojos (gato con gafas).
+   Las dos comparten el degradado con rayos de luz y la tarjeta crema.
    ===================================================================== */
 
 :root {
-  --morado: #4f4e80;
-  --morado-medio: #6b6899;
-  --morado-claro: #9790bb;
-  --morado-tenue: #b9b4d4;
-  --crema: #fdf9ee;
-  --crema-borde: #ece3cf;
-  --lavanda: #e6e2f6;
-  --lavanda-oscuro: #6f6b96;
-  --amarillo: #f6e5a4;
-  --verde: #cfe3c4;
-  --rosa: #f4d8e0;
-  --texto: #2a2a33;
-  --texto-suave: #5d5d68;
+  --cielo: #6c7cab;
+  --cielo-medio: #8a88ad;
+  --malva: #a08b95;
+  --crema: #f9f2e6;
+  --crema-borde: #eee3d1;
+  --linea: #e3d7c4;
+  --tinta: #2f3445;
+  --texto-suave: #4f5262;
+  --brote: #5f8a5a;
+
+  --lavanda: #dcd8f4;
+  --amarillo: #f6e3a8;
+  --durazno: #f6d3bd;
+  --rosa: #f7d5dc;
 }
 
 * {
@@ -35,13 +37,23 @@ body {
   height: 100%;
   overflow: hidden;
   font-family: 'Patrick Hand', 'Comic Sans MS', 'Segoe UI', sans-serif;
-  color: var(--texto);
+  color: var(--tinta);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Degradado azul -> malva con franjas diagonales de luz. */
+body {
+  background:
+    repeating-linear-gradient(115deg,
+      rgba(255, 255, 255, 0) 0 9vw,
+      rgba(255, 255, 255, 0.07) 9vw 13vw,
+      rgba(255, 255, 255, 0) 13vw 22vw),
+    linear-gradient(160deg, var(--cielo) 0%, var(--cielo-medio) 50%, var(--malva) 100%);
+}
+
 .icono {
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.3em;
+  height: 1.3em;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.7;
@@ -49,296 +61,264 @@ body {
   stroke-linejoin: round;
 }
 
+/* ---- Fases: cada una muestra solo lo suyo ---------------------------- */
+
+body.fase-descanso .solo-ejercicios,
+body.fase-ejercicios .solo-descanso {
+  display: none !important;
+}
+
+.solo-descanso,
+.solo-ejercicios {
+  animation: aparecer 0.6s ease;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- Distribucion ---------------------------------------------------- */
+
 .bloqueo {
-  display: flex;
   height: 100vh;
   width: 100vw;
-}
-
-/* ---- Panel izquierdo ------------------------------------------------ */
-
-.panel-descanso {
-  flex: 1 1 48%;
-  background: linear-gradient(150deg, var(--morado) 0%, var(--morado-medio) 55%, var(--morado-claro) 100%);
-  color: #fff;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  gap: 3vw;
+  padding: 4vh 5vw;
 }
 
-.panel-descanso::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.10), transparent 42%),
-    radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 46%);
-  pointer-events: none;
-}
+/* ---- Columna izquierda --------------------------------------------- */
 
-.panel-contenido {
-  position: relative;
+.columna-izquierda {
+  color: #fff;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 24px;
-  max-width: 460px;
 }
 
-.icono-grande {
-  width: 62px;
-  height: 62px;
+.columna-textos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ojo-rayos {
+  width: clamp(56px, 7vh, 76px);
+  height: auto;
   fill: none;
   stroke: #fff;
-  stroke-width: 1.4;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  margin-bottom: 2px;
+}
+
+.ojo-rayos .contorno {
+  fill: rgba(255, 255, 255, 0.92);
+}
+
+.ojo-rayos .iris {
+  fill: #8fa0d8;
+  stroke: none;
+}
+
+.ojo-rayos .pupila {
+  fill: #fff;
+  stroke: none;
 }
 
 .etiqueta {
-  margin: 0;
-  font-size: 20px;
-  opacity: 0.95;
+  margin: 1.6vh 0 0;
+  font-size: clamp(18px, 2.4vh, 24px);
 }
 
 .reloj {
-  margin: 0;
-  font-size: 84px;
+  margin: 1.5vh 0 0;
+  font-size: clamp(80px, 15vh, 150px);
   line-height: 1;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 4px 18px rgba(40, 40, 80, 0.18);
 }
 
 .fecha {
-  margin: 0;
-  font-size: 17px;
-  opacity: 0.85;
+  margin: 1.4vh 0 0;
+  font-size: clamp(18px, 2.4vh, 24px);
+}
+
+.fecha::first-letter {
+  text-transform: uppercase;
 }
 
 .chip-fin {
-  margin: 6px 0 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  margin: 1.6vh 0 0;
+  padding: 6px 18px;
   border-radius: 999px;
-  padding: 7px 16px;
-  font-size: 17px;
+  background: rgba(255, 255, 255, 0.24);
+  font-size: clamp(14px, 1.8vh, 18px);
 }
 
 .lema {
-  margin: 10px 0 0;
-  font-size: 19px;
-  line-height: 1.35;
-  opacity: 0.95;
-}
-
-.restante {
-  margin: 0;
-  font-size: 16px;
-  opacity: 0.78;
-  font-variant-numeric: tabular-nums;
+  margin: 3.4vh 0 0;
+  font-size: clamp(19px, 2.7vh, 27px);
+  line-height: 1.4;
 }
 
 .gato {
-  margin-top: 4px;
-}
-
-.gato img {
-  width: 210px;
+  margin-top: 1.5vh;
+  width: clamp(160px, 25vh, 260px);
   height: auto;
-  filter: drop-shadow(0 10px 18px rgba(25, 20, 50, 0.28));
+  filter: drop-shadow(0 12px 20px rgba(30, 25, 60, 0.22));
 }
 
-/* ---- Panel derecho -------------------------------------------------- */
+.gato-gafas {
+  margin-top: 4vh;
+  width: clamp(180px, 30vh, 300px);
+}
 
-.panel-ejercicio {
-  flex: 1 1 52%;
-  background: linear-gradient(200deg, #6e6a9c 0%, #8b82ae 100%);
+/* ---- Tarjeta crema --------------------------------------------------- */
+
+.columna-derecha {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 26px;
+  min-width: 0;
 }
 
-.tarjeta-ejercicio {
+.tarjeta {
   width: 100%;
-  max-width: 560px;
+  max-width: 720px;
   background: var(--crema);
-  border-radius: 22px;
   border: 1px solid var(--crema-borde);
-  padding: 26px 30px 28px;
+  border-radius: 22px;
+  padding: clamp(24px, 5vh, 56px) clamp(24px, 4vw, 56px);
   text-align: center;
-  box-shadow: 0 18px 40px rgba(30, 25, 60, 0.28);
+  box-shadow: 0 22px 50px rgba(40, 34, 70, 0.25);
 }
 
-.sprout {
-  display: inline-grid;
-  place-items: center;
+.brote svg {
   width: 34px;
-  height: 34px;
-  margin-bottom: 4px;
-}
-
-.sprout svg {
-  width: 30px;
-  height: 30px;
-  fill: none;
-  stroke: #6f9e5c;
-  stroke-width: 2;
-  stroke-linecap: round;
+  height: 26px;
+  fill: #7fa477;
+  stroke: var(--brote);
+  stroke-width: 1.2;
   stroke-linejoin: round;
 }
 
-.tarjeta-ejercicio h1 {
-  font-size: 30px;
-  line-height: 1.2;
-  margin: 0;
+.tarjeta h1 {
+  margin: 1vh 0 0;
+  font-weight: 400;
+  font-size: clamp(32px, 5vh, 50px);
+  line-height: 1;
 }
 
 .subtitulo {
-  margin: 8px auto 0;
+  margin: 2vh auto 0;
   max-width: 380px;
-  font-size: 16px;
-  line-height: 1.3;
+  font-size: clamp(17px, 2.3vh, 22px);
+  line-height: 1.2;
   color: var(--texto-suave);
 }
 
 .divisor {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 14px 0 10px;
-  color: var(--morado);
+  justify-content: center;
+  gap: 18px;
+  margin: 3vh 0 2.4vh;
+  font-size: 13px;
 }
 
 .divisor::before,
 .divisor::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--lavanda);
+  content: "";
+  width: 70px;
+  height: 1.5px;
+  background: var(--tinta);
+  opacity: 0.75;
 }
 
-.corazon {
-  font-size: 13px;
-}
-
-.contador {
-  margin: 0;
-  font-size: 16px;
-  color: var(--texto-suave);
-}
-
-.temporizador {
-  margin: 2px 0 4px;
-  font-size: 56px;
-  line-height: 1;
-  color: var(--morado);
-  font-variant-numeric: tabular-nums;
-}
-
-.titulo-ejercicio {
-  margin: 6px 0 0;
-  font-size: 25px;
-  line-height: 1.2;
-}
-
-.instrucciones {
-  margin: 8px auto 0;
-  max-width: 400px;
-  font-size: 18px;
-  line-height: 1.35;
-  color: var(--texto-suave);
-}
-
-.siguiente {
-  margin: 12px 0 0;
-  font-size: 16px;
-  color: var(--lavanda-oscuro);
-}
-
-.progreso {
-  display: flex;
-  justify-content: center;
-  gap: 9px;
-  margin: 12px 0 4px;
-}
-
-.progreso span {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--lavanda);
-}
-
-.progreso span.activo {
-  background: var(--lavanda-oscuro);
-}
-
-.lista {
+/* Cuadricula 2x2 con lineas divisorias en cruz. */
+.cuadricula {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-  text-align: left;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
-.item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: start;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid transparent;
-  background: rgba(230, 226, 246, 0.42);
+.celda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.2vh 18px;
 }
 
-.item.actual {
-  border-color: var(--lavanda-oscuro);
-  background: rgba(230, 226, 246, 0.85);
+.celda:nth-child(odd) {
+  border-right: 1.5px solid var(--linea);
 }
 
-.item-icono {
-  width: 34px;
-  height: 34px;
+.celda:nth-child(-n + 2) {
+  border-bottom: 1.5px solid var(--linea);
+}
+
+.circulo {
+  width: clamp(38px, 5vh, 50px);
+  height: clamp(38px, 5vh, 50px);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 16px;
-  color: var(--texto);
-  flex: 0 0 auto;
+  font-size: clamp(16px, 2.2vh, 21px);
+  color: var(--tinta);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.item-cuerpo h3 {
-  margin: 0;
-  font-size: 17px;
-  line-height: 1.2;
+.celda h2 {
+  margin: 1.4vh 0 0;
+  font-weight: 400;
+  font-size: clamp(19px, 2.7vh, 26px);
+  line-height: 1.1;
 }
 
-.item-cuerpo p {
-  margin: 3px 0 0;
-  font-size: 14px;
-  line-height: 1.25;
+.celda p {
+  margin: 0.8vh 0 0;
+  max-width: 200px;
+  font-size: clamp(14px, 1.8vh, 17px);
+  line-height: 1.15;
   color: var(--texto-suave);
 }
 
-.consejo {
-  margin: 14px 0 0;
-  font-size: 16px;
-  color: var(--lavanda-oscuro);
-  font-style: italic;
+/* Ejercicio en curso: el numero se destaca con un anillo. */
+.celda.actual .circulo {
+  box-shadow: 0 0 0 3px var(--crema), 0 0 0 5px var(--tinta);
+  transform: scale(1.06);
 }
 
+.celda.actual h2 {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.tono-lavanda { background: var(--lavanda); }
+.tono-amarillo { background: var(--amarillo); }
+.tono-durazno { background: var(--durazno); }
+.tono-rosa { background: var(--rosa); }
+
 @media (max-width: 900px) {
-  .reloj { font-size: 60px; }
-  .gato img { width: 150px; }
-  .lista { grid-template-columns: 1fr; }
+  .bloqueo {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+/* ---- Pantallas secundarias: solo la columna izquierda, centrada ---- */
+
+body.secundaria .bloqueo {
+  grid-template-columns: 1fr;
+}
+
+body.secundaria .columna-derecha {
+  display: none;
 }

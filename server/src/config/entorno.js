@@ -30,6 +30,17 @@ const entorno = {
   hashing: {
     rondas: Number(process.env.BCRYPT_ROUNDS || 10),
   },
+
+  sesion: {
+    // Dias que dura una sesion antes de pedir la contrasena otra vez.
+    diasVigencia: Number(process.env.SESION_DIAS || 90),
+  },
+
+  intentos: {
+    // Intentos fallidos de inicio de sesion permitidos por equipo y correo.
+    maximo: Number(process.env.INTENTOS_MAXIMOS || 10),
+    ventanaMinutos: Number(process.env.INTENTOS_VENTANA_MIN || 15),
+  },
 };
 
 module.exports = entorno;

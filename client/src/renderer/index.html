@@ -67,6 +67,30 @@
       <path d="M12 3.5 2.8 19.5h18.4L12 3.5Z" />
       <path d="M12 9.5v4.5M12 16.6v.9" />
     </symbol>
+    <symbol id="i-ojo-simple" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.6-5.5 9.5-5.5 9.5 5.5 9.5 5.5-3.6 5.5-9.5 5.5S2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.8" />
+    </symbol>
+    <symbol id="i-ojo-tachado" viewBox="0 0 24 24">
+      <path d="M2.5 12s3.6-5.5 9.5-5.5 9.5 5.5 9.5 5.5-3.6 5.5-9.5 5.5S2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.8" />
+      <path d="M4 20 20 4" />
+    </symbol>
+    <symbol id="i-corazon-hoja" viewBox="0 0 24 24">
+      <path d="M12 20.5S3.5 15.5 3.5 9.4A4.9 4.9 0 0 1 12 6.3a4.9 4.9 0 0 1 8.5 3.1c0 6.1-8.5 11.1-8.5 11.1Z" />
+      <path d="M12 20V9.5M12 14l-3-3M12 12l2.6-2.6" />
+    </symbol>
+    <symbol id="i-cronometro" viewBox="0 0 24 24">
+      <circle cx="12" cy="13.5" r="7.5" />
+      <path d="M12 13.5V9.8M10 2.8h4M12 2.8V6M18.2 6.8l1.3-1.3" />
+    </symbol>
+    <symbol id="i-ajustes" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="3.2" />
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="M9.5 6l6 6-6 6" />
+    </symbol>
   </defs>
 </svg>
 
@@ -75,17 +99,25 @@
      ================================================================ -->
 <section id="vista-acceso" class="vista acceso">
   <div class="acceso-bloque">
+    <!-- Panel izquierdo: presentacion de la marca (Figura 4) -->
     <div class="acceso-presentacion">
-      <div class="marca">
-        <svg class="icono icono-ojo"><use href="#i-ojo"></use></svg>
-        <span class="marca-nombre">Eybrek</span>
-      </div>
+      <span class="burbuja burbuja-izquierda" aria-hidden="true"></span>
+      <span class="burbuja burbuja-derecha" aria-hidden="true"></span>
 
-      <h2 class="acceso-lema">Tus ojos también necesitan un descanso</h2>
+      <div class="presentacion-marca">
+        <svg class="ojo-pestanas" viewBox="0 0 64 40" aria-hidden="true">
+          <path class="ojo-rayos" d="M32 3v6M18 6l3 5M46 6l-3 5M8 12l4 4M56 12l-4 4" />
+          <path class="ojo-contorno" d="M6 27s10-11 26-11 26 11 26 11-10 11-26 11S6 27 6 27Z" />
+          <circle class="ojo-iris" cx="32" cy="27" r="7" />
+          <circle class="ojo-pupila" cx="32" cy="27" r="2.6" />
+        </svg>
 
-      <div class="acceso-gato">
-        <img src="../../assets/gato-mimido.png" alt="Gato descansando sobre una almohada" />
-        <span class="gato-aliento">z z z</span>
+        <h1 class="acceso-titulo">Eybrek</h1>
+        <p class="acceso-lema">Tus ojos también necesitan un descanso</p>
+        <span class="acceso-corazon" aria-hidden="true">&#9829;</span>
+
+        <img class="acceso-logo" src="../../assets/logo.png"
+             alt="Logo de EyBrek: un gato dormido sobre un ojo en pausa" />
       </div>
 
       <ul class="caracteristicas">
@@ -94,44 +126,49 @@
           <span>Pausas<br />obligatorias</span>
         </li>
         <li>
-          <span class="caracteristica-icono tono-amarillo"><svg class="icono"><use href="#i-ojo"></use></svg></span>
+          <span class="caracteristica-icono tono-amarillo"><svg class="icono"><use href="#i-ojo-simple"></use></svg></span>
           <span>Ejercicios<br />guiados</span>
         </li>
         <li>
-          <span class="caracteristica-icono tono-verde"><svg class="icono"><use href="#i-hoja"></use></svg></span>
+          <span class="caracteristica-icono tono-verde"><svg class="icono"><use href="#i-corazon-hoja"></use></svg></span>
           <span>Consejos para tu<br />vista</span>
         </li>
       </ul>
     </div>
 
+    <!-- Panel derecho: inicio de sesion y registro -->
     <div class="acceso-panel">
+      <span class="burbuja burbuja-esquina" aria-hidden="true"></span>
+
       <div class="tarjeta">
         <h2 id="titulo-acceso">Bienvenido de vuelta</h2>
         <p id="subtitulo-acceso" class="tarjeta-subtitulo">Inicia sesión para cuidar tu vista.</p>
 
         <form id="formulario-acceso" novalidate>
-          <label class="campo">
-            <span class="campo-etiqueta">Correo electrónico</span>
-            <span class="campo-envoltorio">
-              <svg class="icono"><use href="#i-persona"></use></svg>
-              <input type="email" id="campo-correo" autocomplete="email" placeholder="tucorreo@ejemplo.com" />
-            </span>
-          </label>
-
           <label class="campo" id="campo-nombre-contenedor" hidden>
-            <span class="campo-etiqueta">Nombre</span>
+            <span class="solo-lector">Nombre</span>
             <span class="campo-envoltorio">
               <svg class="icono"><use href="#i-persona"></use></svg>
-              <input type="text" id="campo-nombre" autocomplete="name" placeholder="Tu nombre" />
+              <input type="text" id="campo-nombre" autocomplete="name" placeholder="Nombre" />
             </span>
           </label>
 
           <label class="campo">
-            <span class="campo-etiqueta">Contraseña</span>
+            <span class="solo-lector">Correo electrónico</span>
+            <span class="campo-envoltorio">
+              <svg class="icono"><use href="#i-persona"></use></svg>
+              <input type="email" id="campo-correo" autocomplete="email" placeholder="Correo electrónico" />
+            </span>
+          </label>
+
+          <label class="campo">
+            <span class="solo-lector">Contraseña</span>
             <span class="campo-envoltorio">
               <svg class="icono"><use href="#i-candado"></use></svg>
-              <input type="password" id="campo-contrasena" autocomplete="current-password" placeholder="••••••••" />
-              <button type="button" id="ver-contrasena" class="boton-ver" aria-label="Mostrar contraseña">ver</button>
+              <input type="password" id="campo-contrasena" autocomplete="current-password" placeholder="Contraseña" />
+              <button type="button" id="ver-contrasena" class="boton-ver" aria-label="Mostrar contraseña" aria-pressed="false">
+                <svg class="icono"><use href="#i-ojo-tachado"></use></svg>
+              </button>
             </span>
           </label>
 
@@ -148,8 +185,6 @@
           </p>
         </form>
       </div>
-
-      <p class="pie-acceso">EyBrek · Proyecto de aula · Diseño de Software I</p>
     </div>
   </div>
 </section>
@@ -159,14 +194,19 @@
      ================================================================ -->
 <section id="vista-configuracion" class="vista configuracion" hidden>
   <aside class="barra-lateral">
-    <div class="marca barra-marca">
-      <svg class="icono icono-ojo"><use href="#i-ojo"></use></svg>
+    <div class="barra-marca">
+      <svg class="ojo-pestanas ojo-pestanas--barra" viewBox="0 0 64 40" aria-hidden="true">
+        <path class="ojo-rayos" d="M32 3v6M18 6l3 5M46 6l-3 5M8 12l4 4M56 12l-4 4" />
+        <path class="ojo-contorno" d="M6 27s10-11 26-11 26 11 26 11-10 11-26 11S6 27 6 27Z" />
+        <circle class="ojo-iris" cx="32" cy="27" r="7" />
+        <circle class="ojo-pupila" cx="32" cy="27" r="2.6" />
+      </svg>
       <span class="marca-nombre">Eybrek</span>
     </div>
 
     <nav class="menu">
-      <a class="menu-item activo" href="#" id="menu-configuracion">
-        <svg class="icono"><use href="#i-reloj"></use></svg>
+      <a class="menu-item activo" href="#" id="menu-configuracion" aria-current="page">
+        <svg class="icono"><use href="#i-ajustes"></use></svg>
         <span>Configuración</span>
       </a>
     </nav>
@@ -179,7 +219,7 @@
       </span>
     </div>
 
-    <button type="button" id="boton-cerrar-sesion" class="boton boton-claro boton-ancho">
+    <button type="button" id="boton-cerrar-sesion" class="boton boton-contorno boton-ancho">
       Cerrar sesión
     </button>
   </aside>
@@ -188,104 +228,133 @@
     <header class="contenido-encabezado">
       <h1>Configuración</h1>
       <p>Define cuándo y por cuánto tiempo descansa tu vista.</p>
+      <p id="proximo-descanso" class="proximo-descanso" role="status" hidden>
+        <svg class="icono"><use href="#i-reloj"></use></svg>
+        <span id="proximo-descanso-texto"></span>
+      </p>
     </header>
 
     <div class="rejilla-tarjetas">
       <article class="tarjeta-opcion">
-        <span class="opcion-icono tono-lavanda"><svg class="icono"><use href="#i-candado"></use></svg></span>
-        <h3 class="opcion-titulo">Activar bloqueo</h3>
-        <div class="opcion-control">
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-lavanda"><svg class="icono"><use href="#i-candado"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Activar bloqueo</h3>
+            <p class="opcion-descripcion">Si lo activas, la pantalla se bloquea y no se puede omitir.</p>
+          </div>
           <label class="interruptor">
+            <span class="solo-lector">Activar bloqueo</span>
             <input type="checkbox" id="campo-bloqueo-activo" />
             <span class="interruptor-pista"><span class="interruptor-boton"></span></span>
           </label>
         </div>
-        <p class="opcion-descripcion">Si lo activas, la pantalla se bloquea y no se puede omitir.</p>
       </article>
 
       <article class="tarjeta-opcion">
-        <span class="opcion-icono tono-verde"><svg class="icono"><use href="#i-reloj"></use></svg></span>
-        <h3 class="opcion-titulo">Bloquear cada</h3>
-        <div class="opcion-control">
-          <select id="campo-intervalo" class="selector">
-            <option value="15">15 minutos</option>
-            <option value="30">30 minutos</option>
-            <option value="60">1 hora</option>
-            <option value="120">2 horas</option>
-            <option value="240">4 horas</option>
-            <option value="480">8 horas</option>
-          </select>
-        </div>
-        <p class="opcion-descripcion">Elige cada cuánto se activa el descanso.</p>
-      </article>
-
-      <article class="tarjeta-opcion tarjeta-opcion--ancha">
-        <span class="opcion-icono tono-lavanda"><svg class="icono"><use href="#i-candado"></use></svg></span>
-        <h3 class="opcion-titulo">Tiempo de bloqueo</h3>
-        <div class="opcion-control opcion-controles">
-          <select id="campo-duracion" class="selector">
-            <option value="5">5 minutos</option>
-            <option value="10">10 minutos</option>
-            <option value="15">15 minutos</option>
-            <option value="20">20 minutos</option>
-            <option value="30">30 minutos</option>
-          </select>
-          <div class="chips" id="chips-duracion">
-            <button type="button" class="chip" data-minutos="5">5 min</button>
-            <button type="button" class="chip" data-minutos="10">10 min</button>
-            <button type="button" class="chip" data-minutos="20">20 min</button>
-            <button type="button" class="chip" data-minutos="30">30 min</button>
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-verde"><svg class="icono"><use href="#i-cronometro"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Bloquear cada</h3>
+            <p class="opcion-descripcion">Elige cada cuánto se activa el descanso.</p>
           </div>
         </div>
-        <p class="opcion-descripcion">Define cuánto tiempo quieres descansar la vista.</p>
-      </article>
-
-      <article class="tarjeta-opcion tarjeta-opcion--ancha">
-        <span class="opcion-icono tono-amarillo"><svg class="icono"><use href="#i-sol"></use></svg></span>
-        <h3 class="opcion-titulo">Horario</h3>
-        <div class="opcion-control opcion-horario">
-          <label class="campo-hora">
-            <span>Desde</span>
-            <input type="time" id="campo-hora-inicio" value="08:00" />
-          </label>
-          <label class="campo-hora">
-            <span>Hasta</span>
-            <input type="time" id="campo-hora-fin" value="21:00" />
-          </label>
-        </div>
-        <p class="opcion-descripcion">Elige el rango de horario en que se activará el bloqueo.</p>
+        <label class="solo-lector" for="campo-intervalo">Bloquear cada</label>
+        <select id="campo-intervalo" class="selector">
+          <option value="15">15 minutos</option>
+          <option value="30">30 minutos</option>
+          <option value="60">1 hora</option>
+          <option value="120">2 horas</option>
+          <option value="240">4 horas</option>
+          <option value="480">8 horas</option>
+        </select>
       </article>
 
       <article class="tarjeta-opcion">
-        <span class="opcion-icono tono-rosa"><svg class="icono"><use href="#i-campana"></use></svg></span>
-        <h3 class="opcion-titulo">Notificaciones</h3>
-        <div class="opcion-control">
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-lavanda"><svg class="icono"><use href="#i-reloj"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Tiempo de bloqueo</h3>
+            <p class="opcion-descripcion">Define cuánto tiempo quieres descansar la vista.</p>
+          </div>
+        </div>
+        <label class="solo-lector" for="campo-duracion">Tiempo de bloqueo</label>
+        <select id="campo-duracion" class="selector">
+          <option value="5">5 minutos</option>
+          <option value="10">10 minutos</option>
+          <option value="15">15 minutos</option>
+          <option value="20">20 minutos</option>
+          <option value="30">30 minutos</option>
+        </select>
+        <div class="chips" id="chips-duracion">
+          <button type="button" class="chip" data-minutos="5">5 min</button>
+          <button type="button" class="chip" data-minutos="10">10 min</button>
+          <button type="button" class="chip" data-minutos="20">20 min</button>
+          <button type="button" class="chip" data-minutos="30">30 min</button>
+        </div>
+      </article>
+
+      <article class="tarjeta-opcion">
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-amarillo"><svg class="icono"><use href="#i-sol"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Horario</h3>
+            <p class="opcion-descripcion">Elige el rango de cuándo se activará el bloqueo.</p>
+          </div>
+        </div>
+        <label class="fila-hora">
+          <span>Desde</span>
+          <input type="time" id="campo-hora-inicio" value="08:00" />
+          <svg class="icono"><use href="#i-chevron"></use></svg>
+        </label>
+        <label class="fila-hora">
+          <span>Hasta</span>
+          <input type="time" id="campo-hora-fin" value="21:00" />
+          <svg class="icono"><use href="#i-chevron"></use></svg>
+        </label>
+      </article>
+
+      <article class="tarjeta-opcion">
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-rosa"><svg class="icono"><use href="#i-campana"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Notificaciones</h3>
+            <p class="opcion-descripcion">Recibe recordatorios para descansar tu vista.</p>
+          </div>
           <label class="interruptor">
+            <span class="solo-lector">Notificaciones</span>
             <input type="checkbox" id="campo-notificaciones" />
             <span class="interruptor-pista"><span class="interruptor-boton"></span></span>
           </label>
         </div>
-        <p class="opcion-descripcion">Recibe recordatorios para descansar tu vista.</p>
       </article>
 
       <article class="tarjeta-opcion">
-        <span class="opcion-icono tono-verde"><svg class="icono"><use href="#i-escudo"></use></svg></span>
-        <h3 class="opcion-titulo">Consejos en pantalla</h3>
-        <div class="opcion-control">
+        <div class="opcion-cabecera">
+          <span class="opcion-icono tono-verde"><svg class="icono"><use href="#i-corazon-hoja"></use></svg></span>
+          <div class="opcion-textos">
+            <h3 class="opcion-titulo">Consejos en pantalla</h3>
+            <p class="opcion-descripcion">Muestra consejos saludables mientras la pantalla está bloqueada.</p>
+          </div>
           <label class="interruptor">
+            <span class="solo-lector">Consejos en pantalla</span>
             <input type="checkbox" id="campo-consejos" checked />
             <span class="interruptor-pista"><span class="interruptor-boton"></span></span>
           </label>
         </div>
-        <p class="opcion-descripcion">Muestra consejos saludables mientras la pantalla está bloqueada.</p>
       </article>
     </div>
 
     <div class="acciones">
-      <button type="button" id="boton-guardar" class="boton boton-primario">Guardar cambios</button>
-      <button type="button" id="boton-probar" class="boton boton-claro">Ver la pantalla de descanso</button>
+      <div class="acciones-guardar">
+        <span class="destello destello-izquierdo" aria-hidden="true"></span>
+        <button type="button" id="boton-guardar" class="boton boton-primario boton-guardar">Guardar cambios</button>
+        <span class="destello destello-derecho" aria-hidden="true"></span>
+      </div>
       <p id="mensaje-guardado" class="mensaje mensaje-ok" role="status" hidden></p>
+      <button type="button" id="boton-probar" class="enlace enlace-probar">Ver la pantalla de descanso</button>
     </div>
+
+    <div class="pie-decorativo" aria-hidden="true"><span>&#9829;</span></div>
   </main>
 </section>
 

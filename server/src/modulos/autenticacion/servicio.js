@@ -9,15 +9,17 @@
 
 const usuarios = require('../acceso-a-datos/usuarios');
 const sesiones = require('../acceso-a-datos/sesiones');
-const configuraciones = require('../acceso-a-datos/configuraciones');
-const progreso = require('../acceso-a-datos/progreso');
+
+// Unica dependencia con otro componente del dominio: la configuracion
+// por defecto se crea a traves de IConfiguracion (crearPorDefecto).
+const configuracion = require('../configuracion/servicio');
 
 const ErrorValidacion = require('../../errores/ErrorValidacion');
 const ErrorNoAutorizado = require('../../errores/ErrorNoAutorizado');
 
 const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const LONGITUD_MINIMA_NOMBRE = 3;
-const LONGITUD_MINIMA_CONTRASENA = 6;
+const LONGITUD_MINIMA_CONTRASENA = 8;
 
 /** Registra un usuario nuevo con su configuracion por defecto (RF-01, RF-12). */
 async function registrar({ nombre, correo, contrasena }) {
@@ -51,8 +53,14 @@ async function registrar({ nombre, correo, contrasena }) {
     contrasena,
   });
 
-  await configuraciones.crearPorDefecto(usuario.id_usuario);
-  await progreso.crear(usuario.id_usuario);
+  // El registro y la configuracion inicial se completan juntos: si la
+  // configuracion falla, se borra la cuenta para no dejarla a medias.
+  try {
+    await configuracion.crearPorDefecto(usuario.id_usuario);
+  } catch (error) {
+    await usuarios.eliminar(usuario.id_usuario);
+    throw error;
+  }
 
   return {
     id_usuario: usuario.id_usuario,
@@ -80,7 +88,6 @@ async function iniciarSesion({ correo, contrasena }) {
   }
 
   const sesion = await sesiones.crear(usuario.id_usuario);
-  const configuracion = await configuraciones.leerPorUsuario(usuario.id_usuario);
 
   return {
     token: sesion.token,
@@ -89,9 +96,7 @@ async function iniciarSesion({ correo, contrasena }) {
       nombre: usuario.nombre,
       correo: usuario.correo,
     },
-    configuracion: configuracion
-      ? require('../configuracion/servicio').aJson(configuracion)
-      : null,
+    configuracion: await configuracion.obtener(usuario.id_usuario),
   };
 }
 

@@ -12,6 +12,7 @@ const autenticacion = require('../modulos/autenticacion/controlador');
 const configuracion = require('../modulos/configuracion/controlador');
 const ejercicios = require('../modulos/ejercicios/controlador');
 const requiereSesion = require('../middlewares/requiereSesion');
+const limitarIntentos = require('../middlewares/limitarIntentos');
 
 const rutas = express.Router();
 
@@ -26,7 +27,7 @@ rutas.get('/salud', (_peticion, respuesta) => {
 
 // ---- Autenticacion --------------------------------------------------
 rutas.post('/auth/registro', autenticacion.registrar);
-rutas.post('/auth/iniciar-sesion', autenticacion.iniciarSesion);
+rutas.post('/auth/iniciar-sesion', limitarIntentos, autenticacion.iniciarSesion);
 rutas.post('/auth/cerrar-sesion', autenticacion.cerrarSesion);
 rutas.get('/auth/sesion', requiereSesion, autenticacion.sesionActual);
 

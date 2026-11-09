@@ -26,10 +26,10 @@ contextBridge.exposeInMainWorld('eybrek', {
   ajustesGuardar: (clave, valor) => ipcRenderer.invoke('ajustes:guardar', clave, valor),
   ajustesLeer: (clave) => ipcRenderer.invoke('ajustes:leer', clave),
 
-  // ---- Ventana de bloqueo -------------------------------------------
-  datosBloqueo: () => ipcRenderer.invoke('bloqueo:datos'),
-  terminarBloqueo: () => ipcRenderer.send('bloqueo:terminado'),
+  // ---- Pantalla de descanso -----------------------------------------
+  // La ventana de bloqueo usa su propio preload (preload-bloqueo.js).
   probarBloqueo: () => ipcRenderer.invoke('bloqueo:probar'),
+  proximoDescanso: () => ipcRenderer.invoke('temporizador:proximo'),
 
   // ---- Eventos del proceso principal ---------------------------------
   onEstadoCambio: (callback) => {

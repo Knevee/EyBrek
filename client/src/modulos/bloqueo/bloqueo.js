@@ -4,27 +4,36 @@
  * MODULO: Bloqueo de pantalla (cliente)
  * Responsabilidad: mostrar el bloqueo con la hora, la hora de fin y el
  * ejercicio visual.
- * Oculta: como se crea la ventana a pantalla completa y como se lleva la
- * cuenta regresiva.
- * Operacion que ofrece: bloquear(duracionMin).
- * Evento: bloqueoTerminado.
+ * Oculta: como se crean las ventanas a pantalla completa (una por cada
+ * monitor) y como se lleva la cuenta regresiva.
+ * Operaciones que ofrece: bloquear(duracionMin), estaBloqueado(),
+ * solicitarFin().
+ * Evento: bloqueoTerminado (callback alTerminar).
  */
 
 const path = require('path');
 const { BrowserWindow, screen } = require('electron');
 
-let ventanaBloqueo = null;
+// Margen para aceptar que la ventana pida terminar un poco antes por
+// diferencias de reloj entre procesos.
+const TOLERANCIA_FIN_MS = 1500;
+
+let ventanas = [];
 let datosBloqueo = null;
 let cuentaRegresiva = null;
 let alTerminar = null;
 let cerrando = false;
 
-/** Crea la ventana de bloqueo a pantalla completa. */
-function crearVentana() {
-  const pantalla = screen.getPrimaryDisplay();
-  const { width, height } = pantalla.workAreaSize;
+/**
+ * Crea la ventana de bloqueo para una pantalla.
+ * La pantalla principal muestra el ejercicio; las demas solo el descanso.
+ */
+function crearVentana(pantalla, principal) {
+  const { x, y, width, height } = pantalla.bounds;
 
   const ventana = new BrowserWindow({
+    x,
+    y,
     width,
     height,
     frame: false,
@@ -38,11 +47,13 @@ function crearVentana() {
     show: false,
     backgroundColor: '#4f4e80',
     webPreferences: {
-      preload: path.join(__dirname, '../../preload.js'),
+      // Preload propio: la ventana de bloqueo solo puede leer sus datos.
+      preload: path.join(__dirname, 'preload-bloqueo.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
       spellcheck: false,
+      devTools: false,
     },
   });
 
@@ -59,14 +70,38 @@ function crearVentana() {
     if (!cerrando) evento.preventDefault();
   });
 
-  // Si pierde el foco, vuelve al frente.
+  // Si el foco se va a una ventana que no es de bloqueo, vuelve al frente.
   ventana.on('blur', () => {
-    if (!cerrando && ventana.isVisible()) ventana.focus();
+    setTimeout(() => {
+      if (cerrando || ventana.isDestroyed() || !ventana.isVisible()) return;
+      const enfocada = BrowserWindow.getFocusedWindow();
+      if (!enfocada || !ventanas.includes(enfocada)) ventana.focus();
+    }, 100);
   });
 
-  ventana.loadFile(path.join(__dirname, '../../renderer/bloqueo.html'));
+  ventana.loadFile(path.join(__dirname, '../../renderer/bloqueo.html'), {
+    query: { pantalla: principal ? 'principal' : 'secundaria' },
+  });
+
+  ventana.once('ready-to-show', () => {
+    if (!ventana.isDestroyed()) ventana.show();
+  });
 
   return ventana;
+}
+
+/** Cubre todas las pantallas conectadas. */
+function cubrirPantallas() {
+  const principal = screen.getPrimaryDisplay();
+  for (const pantalla of screen.getAllDisplays()) {
+    ventanas.push(crearVentana(pantalla, pantalla.id === principal.id));
+  }
+}
+
+/** Si se conecta un monitor durante el descanso, tambien se bloquea. */
+function alAgregarPantalla(_evento, pantalla) {
+  if (!estaBloqueado()) return;
+  ventanas.push(crearVentana(pantalla, false));
 }
 
 /**
@@ -93,17 +128,15 @@ function bloquear({ duracionMinutos, ejercicio, catalogo = [], alTerminar: callb
 
   alTerminar = callback || null;
 
-  ventanaBloqueo = crearVentana();
-  ventanaBloqueo.once('ready-to-show', () => {
-    if (ventanaBloqueo) ventanaBloqueo.show();
-  });
+  cubrirPantallas();
+  screen.on('display-added', alAgregarPantalla);
 
   // Utilidad de apoyo: EYBREK_CAPTURA_BLOQUEO=ruta.png guarda una imagen
   // de la pantalla de bloqueo. Se usa para documentar el proyecto.
   if (process.env.EYBREK_CAPTURA_BLOQUEO) {
     setTimeout(async () => {
       try {
-        const imagen = await ventanaBloqueo.webContents.capturePage();
+        const imagen = await ventanas[0].webContents.capturePage();
         require('fs').writeFileSync(process.env.EYBREK_CAPTURA_BLOQUEO, imagen.toPNG());
         require('../comunicacion/registro').escribir(
           `Captura del bloqueo guardada en ${process.env.EYBREK_CAPTURA_BLOQUEO}`
@@ -126,7 +159,24 @@ function leerDatos() {
   return datosBloqueo;
 }
 
-/** Cierra la ventana de bloqueo y avisa que termino. */
+/** Indica si hay un bloqueo en curso. */
+function estaBloqueado() {
+  return Boolean(datosBloqueo);
+}
+
+/**
+ * La ventana pide terminar el bloqueo. Solo se acepta si ya se cumplio
+ * la duracion: ninguna ventana puede acortar el descanso (RF-18).
+ */
+function solicitarFin() {
+  if (!datosBloqueo) return false;
+  const fin = new Date(datosBloqueo.horaFin).getTime();
+  if (Date.now() + TOLERANCIA_FIN_MS < fin) return false;
+  terminar();
+  return true;
+}
+
+/** Cierra las ventanas de bloqueo y avisa que termino. */
 function terminar() {
   cerrar();
 
@@ -137,7 +187,7 @@ function terminar() {
   }
 }
 
-/** Cierra la ventana sin disparar el aviso de terminacion. */
+/** Cierra las ventanas sin disparar el aviso de terminacion. */
 function cerrar() {
   cerrando = true;
 
@@ -146,10 +196,13 @@ function cerrar() {
     cuentaRegresiva = null;
   }
 
-  if (ventanaBloqueo && !ventanaBloqueo.isDestroyed()) {
-    ventanaBloqueo.destroy();
+  screen.removeListener('display-added', alAgregarPantalla);
+
+  for (const ventana of ventanas) {
+    if (!ventana.isDestroyed()) ventana.destroy();
   }
-  ventanaBloqueo = null;
+  ventanas = [];
+  datosBloqueo = null;
 
   // La bandera se limpia en el siguiente turno para que el evento
   // 'close' ya haya ocurrido.
@@ -158,4 +211,4 @@ function cerrar() {
   }, 0);
 }
 
-module.exports = { bloquear, terminar, cerrar, leerDatos };
+module.exports = { bloquear, terminar, cerrar, leerDatos, estaBloqueado, solicitarFin };
