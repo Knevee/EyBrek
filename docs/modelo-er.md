@@ -87,7 +87,7 @@ erDiagram
 4. Clic derecho en el esquema `eybrek` → **EER Diagram** → **New EER Diagram**.
 
 Si usa SQLite, importe el esquema en lugar de la conexión: `File` →
-`Import` → `SQL Script` → `database/esquema-completo.sql`.
+`Import` → `SQL Script` → `database/01_esquema_mysql.sql`.
 
 ## Notas
 

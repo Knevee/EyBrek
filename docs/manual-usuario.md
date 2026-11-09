@@ -36,15 +36,15 @@ guardan en la nube (Supabase).
 Opcional. Solo tiene sentido si quieres una base de datos **central**
 compartida por varias personas. En ese caso:
 
-```powershell
-cd EyBrek\database
-powershell -ExecutionPolicy Bypass -File instalar-base-datos.ps1
-```
+1. En MySQL Workbench, abre y ejecuta `database/01_esquema_mysql.sql` y
+   luego `database/02_datos_iniciales.sql`. Se crea la base `eybrek` con sus
+   tablas y los 4 ejercicios.
+2. Crea un usuario para la aplicación con permisos sobre esa base.
+3. Copia `server/.env.example` como `server/.env` y completa `DB_MOTOR=mysql`,
+   `DB_USER` y `DB_PASSWORD`.
 
-El script te pide la contraseña de root de MySQL (la que pusiste al instalar
-MySQL Server), te pide o te genera la contraseña del usuario de la
-aplicación, crea la base con sus tablas y escribe el archivo `server/.env`.
-La contraseña **no queda guardada en ningún archivo del repositorio**.
+El archivo `.env` está excluido de git: la contraseña **no se sube al
+repositorio**.
 
 ---
 
@@ -96,6 +96,8 @@ La pausa pasa por dos pantallas:
    empiezan los 4 ejercicios, 20 segundos cada uno. A la izquierda está el
    temporizador y a la derecha la lista; el ejercicio que estás haciendo
    aparece resaltado. Al terminarlos vuelves a la pantalla de descanso.
+
+![Pantalla de ejercicios](imagenes/pantalla-ejercicios.png)
 
 La pausa **no se puede omitir**. Cuando termina el tiempo configurado, la
 pantalla se desbloquea sola y el conteo del intervalo empieza de nuevo.

@@ -71,21 +71,6 @@ function crearVentanaPrincipal() {
     if (!iniciarOculto) ventanaPrincipal.show();
   });
 
-  // Utilidad de apoyo: EYBREK_CAPTURA=ruta.png guarda una imagen de la
-  // ventana principal. Se usa para documentar las pantallas del proyecto.
-  if (process.env.EYBREK_CAPTURA) {
-    ventanaPrincipal.once('ready-to-show', async () => {
-      await new Promise((resolver) => setTimeout(resolver, 2500));
-      try {
-        const imagen = await ventanaPrincipal.webContents.capturePage();
-        require('fs').writeFileSync(process.env.EYBREK_CAPTURA, imagen.toPNG());
-        registro.escribir(`Captura guardada en ${process.env.EYBREK_CAPTURA}`);
-      } catch (error) {
-        registro.escribir(`No se pudo capturar la ventana: ${error.message}`);
-      }
-    });
-  }
-
   ventanaPrincipal.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };

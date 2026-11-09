@@ -12,7 +12,6 @@
 | Herramienta | Propósito | Resultado |
 |---|---|---|
 | `server/pruebas/api.test.js` | Pruebas automáticas de la API (node:test + supertest) | **19 de 19 aprobadas** |
-| `docs/pruebas/verificar-api.ps1` | Verificación de la API contra el servidor en marcha | **25 de 25 aprobadas** |
 | Inspección manual | Comportamiento del cliente de escritorio | Las 3 pantallas revisadas |
 
 Comandos:
@@ -20,8 +19,6 @@ Comandos:
 ```powershell
 cd EyBrek\server
 npm run pruebas
-
-powershell -ExecutionPolicy Bypass -File docs\pruebas\verificar-api.ps1
 ```
 
 Las pruebas se ejecutaron con **los dos motores de base de datos** y ambos

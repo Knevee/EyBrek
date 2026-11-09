@@ -7,7 +7,7 @@ fomentar descansos regulares y contribuir al cuidado de la salud visual.
 Este repositorio contiene la implementación del sistema descrita en el
 documento de diseño del segundo corte (*EyBrek — Proyecto de aula: avance del
 segundo corte*, Diseño de Software I, UDES), que está en
-[`docs/documento/`](docs/documento/).
+[`Doc/`](Doc/).
 
 ---
 
@@ -83,9 +83,7 @@ disponible (RNF-05), sin avisar al usuario.
 EyBrek/
 ├── database/                    Esquema de la base de datos
 │   ├── 01_esquema_mysql.sql     Tablas (solo si se usa MySQL)
-│   ├── 02_datos_iniciales.sql   Catálogo inicial de 4 ejercicios
-│   ├── esquema-completo.sql     Para importar en MySQL Workbench
-│   └── instalar-base-datos.ps1  Instalador de MySQL (opcional)
+│   └── 02_datos_iniciales.sql   Catálogo inicial de 4 ejercicios
 │
 ├── server/                      Servidor (Node.js + Express)
 │   ├── src/
@@ -120,18 +118,18 @@ EyBrek/
 │   │   │   ├── bloqueo/          Bloqueo de pantalla
 │   │   │   └── interfaz/         Avisos del sistema
 │   │   └── renderer/             Interfaz de usuario (HTML + CSS + JS)
-│   ├── assets/gato-mimido.png    Elemento gráfico del prototipo
-│   ├── capturar.js               Utilidad para capturar las pantallas
-│   └── diagnosticar.js           Utilidad para inspeccionar el DOM
+│   ├── assets/                   Logo y gatos del prototipo
+│   ├── build/icono.png           Icono del instalador
+│   └── pruebas/                  Pruebas del temporizador
+│
+├── supabase/esquema.sql          Esquema de la base en la nube
 │
 └── docs/
     ├── imagenes/                 Capturas de las pantallas
-    ├── documento/                El documento de diseño del corte
     ├── modelo-er.md              Diagrama entidad-relación (Mermaid)
     ├── manual-usuario.md         Manual de uso e instalación
-    └── pruebas/
-        ├── verificar-api.ps1     Verificación de la API (25 comprobaciones)
-        └── acta-de-pruebas.md    Registro de pruebas por requisito
+    ├── nube-e-instalador.md      Supabase e instalador
+    └── pruebas/acta-de-pruebas.md Registro de pruebas por requisito
 ```
 
 ---
@@ -252,9 +250,6 @@ npm run pruebas
 # Pruebas del temporizador del cliente (8 casos)
 cd ..\client
 npm run pruebas
-
-# Verificación completa de la API contra el servidor en marcha (25 comprobaciones)
-powershell -ExecutionPolicy Bypass -File docs\pruebas\verificar-api.ps1
 ```
 
 El registro de resultados por requisito está en
@@ -355,7 +350,7 @@ En la carpeta de datos de la aplicación (`%APPDATA%\eybrek-client`):
 
 ## 10. Referencias del proyecto
 
-- Documento de diseño: [`docs/documento/EyBrek_3_SegundoCorte.docx`](docs/documento/).
+- Documento de diseño: [`Doc/EyBrek_3_SegundoCorte.docx`](Doc/).
 - ISO/IEC/IEEE 29148:2018 — *Systems and software engineering: Life cycle
   processes: Requirements engineering.*
 - Gamma, E., Helm, R., Johnson, R. y Vlissides, J. (1994). *Design Patterns:

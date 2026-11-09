@@ -131,24 +131,6 @@ function bloquear({ duracionMinutos, ejercicio, catalogo = [], alTerminar: callb
   cubrirPantallas();
   screen.on('display-added', alAgregarPantalla);
 
-  // Utilidad de apoyo: EYBREK_CAPTURA_BLOQUEO=ruta.png guarda una imagen
-  // de la pantalla de bloqueo. Se usa para documentar el proyecto.
-  if (process.env.EYBREK_CAPTURA_BLOQUEO) {
-    setTimeout(async () => {
-      try {
-        const imagen = await ventanas[0].webContents.capturePage();
-        require('fs').writeFileSync(process.env.EYBREK_CAPTURA_BLOQUEO, imagen.toPNG());
-        require('../comunicacion/registro').escribir(
-          `Captura del bloqueo guardada en ${process.env.EYBREK_CAPTURA_BLOQUEO}`
-        );
-      } catch (error) {
-        require('../comunicacion/registro').escribir(
-          `No se pudo capturar el bloqueo: ${error.message}`
-        );
-      }
-    }, 4000);
-  }
-
   // El proceso principal es la autoridad del tiempo: al cumplirse la
   // duracion configurada, la pantalla se desbloquea (RF-22).
   cuentaRegresiva = setTimeout(() => terminar(), duracion * 60 * 1000);

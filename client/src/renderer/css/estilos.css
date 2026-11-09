@@ -5,12 +5,7 @@
    ===================================================================== */
 
 :root {
-  --crema: #fdf9ee;
   --crema-fondo: #f6f1e3;
-  --crema-borde: #e9e1cc;
-
-  --azul-panel: #cfe0f7;
-  --azul-panel-claro: #dceafb;
 
   --verde-barra: #cfe3c4;
   --verde-barra-oscuro: #b7d4a9;
@@ -22,15 +17,10 @@
   --amarillo: #f8e7a6;
   --rosa: #f6d9e0;
 
-  --morado: #4f4e80;
-  --morado-claro: #8d84ad;
-
   --texto: #2a2a33;
   --texto-suave: #5d5d68;
   --texto-tenue: #7a7a85;
 
-  --borde: #e6ddc7;
-  --sombra: 0 10px 30px rgba(74, 68, 48, 0.10);
   --sombra-suave: 0 4px 14px rgba(74, 68, 48, 0.08);
 
   /* Inicio de sesion (Figura 4 del documento) */
@@ -56,7 +46,6 @@
   --config-tinta: #2f3445;
   --config-verde: #36584a;
   --config-verde-claro: #43695a;
-  --radio: 18px;
   --radio-pequeno: 12px;
 }
 
@@ -110,12 +99,6 @@ h1, h2, h3 {
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.icono-ojo {
-  width: 2.1em;
-  height: 2.1em;
-  stroke-width: 1.5;
 }
 
 /* =====================================================================
@@ -341,13 +324,6 @@ h1, h2, h3 {
   margin-bottom: 12px;
 }
 
-.campo-etiqueta {
-  display: block;
-  font-size: 15px;
-  color: var(--texto-suave);
-  margin-bottom: 6px;
-}
-
 .campo-envoltorio {
   display: flex;
   align-items: center;
@@ -437,16 +413,6 @@ h1, h2, h3 {
 
 .boton-ancho {
   width: 100%;
-}
-
-.boton-claro {
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--verde-primario);
-  border-color: var(--verde-barra-oscuro);
-}
-
-.boton-claro:hover {
-  background: #fff;
 }
 
 .enlace {

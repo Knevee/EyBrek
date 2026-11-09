@@ -5,8 +5,8 @@
 -- base de datos solo, sin instalar nada y sin contrasenas.
 --
 -- Use este script solo si quiere MySQL (por ejemplo, para tener una base
--- de datos central compartida por todo el equipo). En ese caso ejecute
--- primero "instalar-base-datos.ps1", que se encarga de todo.
+-- de datos central compartida por todo el equipo). Los pasos estan en
+-- docs/manual-usuario.md, seccion 1.3.
 --
 -- Equivalente del modelo entidad-relacion de la Figura 2 del documento.
 -- =====================================================================
