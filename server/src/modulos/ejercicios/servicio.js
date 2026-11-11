@@ -18,6 +18,7 @@ async function catalogo() {
     titulo: ejercicio.titulo,
     instrucciones: ejercicio.instrucciones,
     orden: ejercicio.orden,
+    duracion_segundos: ejercicio.duracion_segundos,
     posicion: indice + 1,
     total: lista.length,
   }));
@@ -54,6 +55,7 @@ async function siguienteEjercicio(idUsuario) {
     titulo: elegido.titulo,
     instrucciones: elegido.instrucciones,
     orden: elegido.orden,
+    duracion_segundos: elegido.duracion_segundos,
     posicion: indice + 1,
     total: lista.length,
   };

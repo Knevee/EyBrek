@@ -89,18 +89,29 @@ Cuando se cumple el intervalo, la pantalla se bloquea:
 
 La pausa pasa por dos pantallas:
 
-1. **Descanso** (gato dormido): a la izquierda verás la hora actual, la fecha
-   y la hora en que termina el descanso; a la derecha, cuatro consejos para tu
-   vista (si tienes activados los *Consejos en pantalla*).
-2. **Ejercicios para tus ojos** (gato con gafas): unos segundos después
-   empiezan los 4 ejercicios, 20 segundos cada uno. A la izquierda está el
-   temporizador y a la derecha la lista; el ejercicio que estás haciendo
-   aparece resaltado. Al terminarlos vuelves a la pantalla de descanso.
+1. **Descanso** (gato dormido): durante los primeros **40 segundos** verás la
+   hora actual, la fecha y la hora en que termina el descanso; a la derecha,
+   cuatro consejos para tu vista (si tienes activados los *Consejos en
+   pantalla*).
+2. **Ejercicio para tus ojos** (gato con gafas): después aparece **un solo
+   ejercicio**, con su nombre y sus instrucciones. El temporizador dura lo
+   que toma leerlo y hacerlo (entre 30 segundos y 1 minuto, según el
+   ejercicio). Al terminarlo vuelves a la pantalla de descanso hasta que se
+   desbloquee.
 
 ![Pantalla de ejercicios](imagenes/pantalla-ejercicios.png)
 
-La pausa **no se puede omitir**. Cuando termina el tiempo configurado, la
-pantalla se desbloquea sola y el conteo del intervalo empieza de nuevo.
+La pausa **no se puede omitir**:
+
+- El bloqueo cubre toda la pantalla, incluida la barra de tareas, y vuelve
+  al frente en medio segundo si se abre el menú Inicio u otra ventana.
+- Si EyBrek se cierra a la fuerza (por ejemplo, con *Finalizar tarea* en el
+  Administrador de tareas), un pequeño proceso vigilante la vuelve a abrir en
+  segundos y el bloqueo sigue con el tiempo que faltaba. Si se apaga el
+  equipo, el descanso también se retoma al encenderlo, si aún no terminó.
+
+Cuando termina el tiempo configurado, la pantalla se desbloquea sola y el
+conteo del intervalo empieza de nuevo.
 
 Un minuto antes de cada pausa recibes una notificación del sistema.
 
@@ -108,10 +119,14 @@ Un minuto antes de cada pausa recibes una notificación del sistema.
 
 ## 4. La rotación de ejercicios
 
-Los 4 ejercicios se turnan: en la primera pausa ves «Cerca y lejos», en la
-segunda «Parpadeo», en la tercera «En círculos», en la cuarta «Palmas» y
-después vuelve a empezar con el primero. El avance se guarda por usuario en
-el servidor, así que cada persona tiene su propia rotación.
+El catálogo tiene **12 ejercicios** y en cada pausa se muestra uno distinto,
+en orden: «Cerca y lejos», «Parpadeo», «En círculos», «Palmas», «Regla
+20-20-20», «Ocho acostado», «Arriba y abajo», «De lado a lado», «Diagonales»,
+«Parpadeo rápido», «Apretar y abrir» y «Sigue tu dedo». Solo cuando se han
+mostrado los 12 vuelve a empezar con el primero, así que con la
+configuración por defecto (un descanso cada 2 horas de 8 a. m. a 9 p. m.)
+ningún ejercicio se repite en el mismo día. El avance se guarda por usuario
+en el servidor, así que cada persona tiene su propia rotación.
 
 ---
 

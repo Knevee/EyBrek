@@ -271,7 +271,6 @@ body.fase-ejercicios .solo-descanso {
   place-items: center;
   font-size: clamp(16px, 2.2vh, 21px);
   color: var(--tinta);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .celda h2 {
@@ -289,16 +288,38 @@ body.fase-ejercicios .solo-descanso {
   color: var(--texto-suave);
 }
 
-/* Ejercicio en curso: el numero se destaca con un anillo. */
-.celda.actual .circulo {
-  box-shadow: 0 0 0 3px var(--crema), 0 0 0 5px var(--tinta);
-  transform: scale(1.06);
+/* ---- Un solo ejercicio (Figura 7) ----------------------------------- */
+
+.antetitulo {
+  margin: 1vh 0 0;
+  font-size: clamp(16px, 2.2vh, 21px);
+  color: var(--texto-suave);
 }
 
-.celda.actual h2 {
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
+.instrucciones {
+  margin: 0 auto;
+  max-width: 500px;
+  font-size: clamp(22px, 3.4vh, 32px);
+  line-height: 1.3;
+}
+
+/* Barra que se vacia al ritmo del temporizador. */
+.barra-tiempo {
+  margin: 4vh auto 0;
+  max-width: 420px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--linea);
+  overflow: hidden;
+}
+
+.barra-tiempo span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #8fa0d8;
+  transition: width 1s linear;
 }
 
 .tono-lavanda { background: var(--lavanda); }

@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { DatabaseSync } = require('node:sqlite');
+const { EJERCICIOS } = require('../catalogo-ejercicios');
 
 const ESQUEMA = `
 CREATE TABLE IF NOT EXISTS Usuario (
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   id_ejercicio  INTEGER PRIMARY KEY AUTOINCREMENT,
   titulo        TEXT    NOT NULL,
   instrucciones TEXT    NOT NULL,
-  orden         INTEGER NOT NULL UNIQUE
+  orden         INTEGER NOT NULL UNIQUE,
+  duracion_segundos INTEGER NOT NULL DEFAULT 40
 );
 
 CREATE TABLE IF NOT EXISTS ProgresoRotacion (
@@ -56,14 +58,6 @@ CREATE TABLE IF NOT EXISTS ProgresoRotacion (
 CREATE INDEX IF NOT EXISTS idx_sesion_usuario  ON Sesion (id_usuario);
 CREATE INDEX IF NOT EXISTS idx_ejercicio_orden ON Ejercicio (orden);
 `;
-
-// Catalogo inicial de ejercicios (se inserta solo la primera vez).
-const EJERCICIOS = [
-  ['Cerca y lejos', 'Mira tu pulgar 5 segundos y luego algo lejano, refléjalo 5 veces.', 1],
-  ['Parpadeo', 'Cierra los ojos y mantenlos así por 2 segundos. Repítelo 10 veces.', 2],
-  ['En círculos', 'Dibuja un círculo con la mirada, 3 veces a cada lado.', 3],
-  ['Palmas', 'Cubre tus ojos con las palmas tibias por 30 segundos.', 4],
-];
 
 class MotorSQLite {
   constructor(configuracion) {
@@ -89,12 +83,21 @@ class MotorSQLite {
   async crearEsquema() {
     this.base.exec(ESQUEMA);
 
-    const total = this.base.prepare('SELECT COUNT(*) AS total FROM Ejercicio').get().total;
-    if (total === 0) {
-      const insertar = this.base.prepare(
-        'INSERT INTO Ejercicio (titulo, instrucciones, orden) VALUES (?, ?, ?)'
-      );
-      for (const ejercicio of EJERCICIOS) insertar.run(...ejercicio);
+    // Bases creadas antes de que existiera la duracion de cada ejercicio.
+    const columnas = this.base.prepare('PRAGMA table_info(Ejercicio)').all();
+    if (!columnas.some((columna) => columna.name === 'duracion_segundos')) {
+      this.base.exec('ALTER TABLE Ejercicio ADD COLUMN duracion_segundos INTEGER NOT NULL DEFAULT 40');
+      const fijar = this.base.prepare('UPDATE Ejercicio SET duracion_segundos = ? WHERE orden = ?');
+      for (const e of EJERCICIOS) fijar.run(e.duracion_segundos, e.orden);
+    }
+
+    // Agrega los ejercicios del catalogo que falten, sin tocar los demas.
+    const insertar = this.base.prepare(
+      `INSERT INTO Ejercicio (titulo, instrucciones, orden, duracion_segundos)
+       VALUES (?, ?, ?, ?) ON CONFLICT (orden) DO NOTHING`
+    );
+    for (const e of EJERCICIOS) {
+      insertar.run(e.titulo, e.instrucciones, e.orden, e.duracion_segundos);
     }
   }
 
@@ -129,4 +132,3 @@ class MotorSQLite {
 }
 
 module.exports = MotorSQLite;
-module.exports.EJERCICIOS = EJERCICIOS;

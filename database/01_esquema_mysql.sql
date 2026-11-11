@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   id_ejercicio  INT AUTO_INCREMENT PRIMARY KEY,
   titulo        VARCHAR(100) NOT NULL,
   instrucciones TEXT         NOT NULL,
-  orden         INT          NOT NULL UNIQUE
+  orden         INT          NOT NULL UNIQUE,
+  duracion_segundos INT      NOT NULL DEFAULT 40
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

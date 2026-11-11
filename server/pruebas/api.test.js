@@ -298,6 +298,20 @@ describe('API de EyBrek', () => {
     assert.ok(ejercicios[0].instrucciones);
   });
 
+  test('Cada ejercicio trae su duracion y hay suficientes para no repetir en el dia', async () => {
+    const respuesta = await request(app)
+      .get('/api/ejercicios')
+      .set(cabeceraSesion())
+      .expect(200);
+
+    const ejercicios = respuesta.body.datos.ejercicios;
+    // Cada 2 horas de 8 a. m. a 9 p. m. hay unos 6 descansos al dia.
+    assert.ok(ejercicios.length >= 12, 'El catalogo debe tener al menos 12 ejercicios');
+    for (const ejercicio of ejercicios) {
+      assert.ok(ejercicio.duracion_segundos >= 10, `${ejercicio.titulo} no tiene duracion`);
+    }
+  });
+
   test('RF-21: la rotacion avanza un ejercicio por consulta y vuelve al primero', async () => {
     const catalogo = await request(app)
       .get('/api/ejercicios')
@@ -313,6 +327,7 @@ describe('API de EyBrek', () => {
         .set(cabeceraSesion())
         .expect(200);
       vistos.push(siguiente.body.datos.ejercicio.titulo);
+      assert.ok(siguiente.body.datos.ejercicio.duracion_segundos >= 10);
     }
 
     const repetido = await request(app)

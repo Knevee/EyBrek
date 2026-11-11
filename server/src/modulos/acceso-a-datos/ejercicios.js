@@ -10,14 +10,14 @@ const db = require('../../db/conexion');
 /** Lee todo el catalogo en orden de rotacion. */
 async function leerTodos() {
   return db.consultar(
-    'SELECT id_ejercicio, titulo, instrucciones, orden FROM Ejercicio ORDER BY orden ASC'
+    'SELECT id_ejercicio, titulo, instrucciones, orden, duracion_segundos FROM Ejercicio ORDER BY orden ASC'
   );
 }
 
 /** Lee un ejercicio por su posicion en la rotacion. */
 async function leerPorOrden(orden) {
   const filas = await db.consultar(
-    'SELECT id_ejercicio, titulo, instrucciones, orden FROM Ejercicio WHERE orden = ?',
+    'SELECT id_ejercicio, titulo, instrucciones, orden, duracion_segundos FROM Ejercicio WHERE orden = ?',
     [orden]
   );
   return filas[0] || null;
@@ -26,7 +26,7 @@ async function leerPorOrden(orden) {
 /** Lee un ejercicio con el identificador dado. */
 async function leerPorId(idEjercicio) {
   const filas = await db.consultar(
-    'SELECT id_ejercicio, titulo, instrucciones, orden FROM Ejercicio WHERE id_ejercicio = ?',
+    'SELECT id_ejercicio, titulo, instrucciones, orden, duracion_segundos FROM Ejercicio WHERE id_ejercicio = ?',
     [idEjercicio]
   );
   return filas[0] || null;

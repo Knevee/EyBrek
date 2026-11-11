@@ -23,6 +23,7 @@ const copiaLocal = require('./modulos/comunicacion/copia-local');
 const registro = require('./modulos/comunicacion/registro');
 const Temporizador = require('./modulos/temporizador/temporizador');
 const bloqueo = require('./modulos/bloqueo/bloqueo');
+const vigilante = require('./modulos/bloqueo/vigilante');
 const notificaciones = require('./modulos/interfaz/notificaciones');
 const validacion = require('./compartido/validacion-configuracion');
 
@@ -294,6 +295,8 @@ async function iniciarSesionGuardada() {
     notificarEstado('acceso');
     mostrarVentanaPrincipal();
   } finally {
+    // Si se retomo un descanso al abrir, el conteo sigue en pausa.
+    if (bloqueo.estaBloqueado()) temporizador.marcarBloqueoEnCurso(true);
     actualizarBandeja();
   }
 }
@@ -359,6 +362,9 @@ function conectarEventosDelTemporizador() {
  * boton de prueba de la pantalla de configuracion.
  */
 async function ejecutarBloqueo() {
+  // Un descanso retomado tras reabrir EyBrek sigue en curso.
+  if (bloqueo.estaBloqueado()) return;
+
   if (!usuario || !configuracionActual) {
     temporizador.reiniciar();
     return;
@@ -389,13 +395,20 @@ async function ejecutarBloqueo() {
   copiaLocal.guardarUltimoEjercicio(ejercicio);
 
   registro.escribir(`Bloqueando la pantalla por ${duracion} minutos.`);
+  mostrarBloqueo({ duracionMinutos: duracion, ejercicio, catalogo });
+}
 
+/**
+ * Muestra el bloqueo, lo guarda en el equipo y arranca el vigilante,
+ * para que el descanso siga aunque EyBrek se cierre a la fuerza.
+ */
+function mostrarBloqueo(opciones) {
   bloqueo.bloquear({
-    duracionMinutos: duracion,
-    ejercicio,
-    catalogo,
+    ...opciones,
     // RF-23: al desbloquear se reinicia el conteo del intervalo.
     alTerminar: () => {
+      copiaLocal.borrarBloqueoEnCurso();
+      vigilante.detener();
       temporizador.reiniciar();
       registro.escribir('Bloqueo terminado: se reinicia el conteo del intervalo.');
       notificarEstado('configuracion');
@@ -403,7 +416,37 @@ async function ejecutarBloqueo() {
     },
   });
 
+  copiaLocal.guardarBloqueoEnCurso(bloqueo.leerDatos());
+  vigilante.iniciar(copiaLocal.rutaBloqueoEnCurso());
   actualizarBandeja();
+}
+
+/**
+ * Si EyBrek se cerro (o se apago el equipo) a mitad de un descanso,
+ * lo retoma con el tiempo que faltaba. Devuelve true si lo retomo.
+ */
+function reanudarBloqueoPendiente() {
+  const pendiente = copiaLocal.leerBloqueoEnCurso();
+  if (!pendiente || !pendiente.horaFin) return false;
+
+  const restanteMs = new Date(pendiente.horaFin).getTime() - Date.now();
+  // Un descanso dura como mucho 30 minutos: un archivo con mas tiempo
+  // no es valido y se descarta.
+  if (restanteMs <= 0 || restanteMs > 31 * 60 * 1000) {
+    copiaLocal.borrarBloqueoEnCurso();
+    return false;
+  }
+
+  registro.escribir('EyBrek se cerro durante un descanso: se retoma el bloqueo.');
+  temporizador.marcarBloqueoEnCurso(true);
+  mostrarBloqueo({
+    duracionMinutos: pendiente.duracionMinutos,
+    ejercicio: pendiente.ejercicio,
+    catalogo: pendiente.catalogo,
+    horaInicio: pendiente.horaInicio,
+    horaFin: pendiente.horaFin,
+  });
+  return true;
 }
 
 /**
@@ -605,6 +648,7 @@ if (!instanciaUnica) {
     conectarEventosDelTemporizador();
     vigilarEnergia();
     configurarInicioConWindows();
+    reanudarBloqueoPendiente();
     iniciarSesionGuardada();
   });
 

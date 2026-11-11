@@ -18,6 +18,7 @@ const ARCHIVO_SESION = 'sesion-local.json';
 const ARCHIVO_EJERCICIO = 'ejercicio-local.json';
 const ARCHIVO_AJUSTES = 'ajustes-local.json';
 const ARCHIVO_CATALOGO = 'catalogo-local.json';
+const ARCHIVO_BLOQUEO = 'bloqueo-en-curso.json';
 
 function rutaArchivo(nombre) {
   return path.join(app.getPath('userData'), nombre);
@@ -110,6 +111,30 @@ function leerCatalogo() {
   return leer(ARCHIVO_CATALOGO);
 }
 
+// ---- Bloqueo en curso ------------------------------------------------
+// Si EyBrek se cierra a la fuerza durante un descanso, este archivo
+// permite retomarlo al volver a abrirse (lo usa tambien el vigilante).
+
+/** Ruta del archivo del bloqueo en curso. */
+function rutaBloqueoEnCurso() {
+  return rutaArchivo(ARCHIVO_BLOQUEO);
+}
+
+/** Guarda los datos del bloqueo que esta en curso. */
+function guardarBloqueoEnCurso(datos) {
+  return escribir(ARCHIVO_BLOQUEO, datos);
+}
+
+/** Lee el bloqueo en curso (null si no hay). */
+function leerBloqueoEnCurso() {
+  return leer(ARCHIVO_BLOQUEO);
+}
+
+/** Borra el bloqueo en curso: el descanso termino. */
+function borrarBloqueoEnCurso() {
+  borrar(ARCHIVO_BLOQUEO);
+}
+
 // ---- Ajustes locales de la pantalla ----------------------------------
 
 /** Guarda un ajuste local (por ejemplo, mostrar consejos). */
@@ -135,6 +160,10 @@ module.exports = {
   leerUltimoEjercicio,
   guardarCatalogo,
   leerCatalogo,
+  rutaBloqueoEnCurso,
+  guardarBloqueoEnCurso,
+  leerBloqueoEnCurso,
+  borrarBloqueoEnCurso,
   guardarAjuste,
   leerAjuste,
 };

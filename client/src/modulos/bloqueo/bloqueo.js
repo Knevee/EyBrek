@@ -21,6 +21,7 @@ const TOLERANCIA_FIN_MS = 1500;
 let ventanas = [];
 let datosBloqueo = null;
 let cuentaRegresiva = null;
+let vigilanciaFoco = null;
 let alTerminar = null;
 let cerrando = false;
 
@@ -36,8 +37,12 @@ function crearVentana(pantalla, principal) {
     y,
     width,
     height,
+    // Sin marco y del tamano de toda la pantalla (no del area de trabajo):
+    // asi tapa tambien la barra de tareas. No se usa fullscreen porque en
+    // Windows, con resizable en false, la ventana queda del tamano del
+    // area de trabajo y la barra de tareas sigue visible.
     frame: false,
-    fullscreen: true,
+    thickFrame: false,
     resizable: false,
     movable: false,
     minimizable: false,
@@ -65,6 +70,16 @@ function crearVentana(pantalla, principal) {
   ventana.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   ventana.webContents.on('will-navigate', (evento) => evento.preventDefault());
 
+  // Atajos que cierran, recargan o sacan de pantalla completa.
+  ventana.webContents.on('before-input-event', (evento, tecla) => {
+    const clave = String(tecla.key).toLowerCase();
+    const bloqueada =
+      (tecla.alt && clave === 'f4') ||
+      (tecla.control && ['w', 'r', 'q', 'n', 't'].includes(clave)) ||
+      ['f5', 'f11', 'escape'].includes(clave);
+    if (bloqueada) evento.preventDefault();
+  });
+
   // No se puede cerrar la ventana a mano (no hay opcion de omitir, RF-18).
   ventana.on('close', (evento) => {
     if (!cerrando) evento.preventDefault();
@@ -84,10 +99,38 @@ function crearVentana(pantalla, principal) {
   });
 
   ventana.once('ready-to-show', () => {
-    if (!ventana.isDestroyed()) ventana.show();
+    if (ventana.isDestroyed()) return;
+    ventana.show();
+    ventana.setBounds(pantalla.bounds);
   });
 
+  // mantenerAlFrente() la devuelve a este tamano si algo la achica.
+  ventana.limitesPantalla = pantalla.bounds;
   return ventana;
+}
+
+/**
+ * Cada medio segundo vuelve a poner el bloqueo encima de todo y le
+ * devuelve el foco. Asi, si se abre el menu Inicio, la barra de tareas
+ * u otra ventana (Win, Alt+Tab), el bloqueo la tapa enseguida.
+ */
+function mantenerAlFrente() {
+  const vivas = ventanas.filter((ventana) => !ventana.isDestroyed() && ventana.isVisible());
+  if (vivas.length === 0) return;
+
+  for (const ventana of vivas) {
+    ventana.setAlwaysOnTop(true, 'screen-saver');
+    const actual = ventana.getBounds();
+    const pantalla = ventana.limitesPantalla;
+    if (actual.width !== pantalla.width || actual.height !== pantalla.height ||
+        actual.x !== pantalla.x || actual.y !== pantalla.y) {
+      ventana.setBounds(pantalla);
+    }
+    ventana.moveTop();
+  }
+
+  const enfocada = BrowserWindow.getFocusedWindow();
+  if (!enfocada || !ventanas.includes(enfocada)) vivas[0].focus();
 }
 
 /** Cubre todas las pantallas conectadas. */
@@ -110,19 +153,22 @@ function alAgregarPantalla(_evento, pantalla) {
  * @param {number} opciones.duracionMinutos  Duracion del bloqueo (RF-18).
  * @param {object} opciones.ejercicio        Ejercicio a mostrar (RF-20).
  * @param {Array}  opciones.catalogo         Catalogo de ejercicios.
+ * @param {string} [opciones.horaInicio]     Para retomar un descanso que ya
+ * @param {string} [opciones.horaFin]        habia empezado (ISO).
  * @param {Function} opciones.alTerminar    Se invoca cuando termina.
  */
-function bloquear({ duracionMinutos, ejercicio, catalogo = [], alTerminar: callback }) {
+function bloquear({ duracionMinutos, ejercicio, catalogo = [], horaInicio, horaFin, alTerminar: callback }) {
   cerrar();
 
   const duracion = Math.max(1, Number(duracionMinutos) || 1);
-  const fin = new Date(Date.now() + duracion * 60 * 1000);
+  const inicio = horaInicio ? new Date(horaInicio) : new Date();
+  const fin = horaFin ? new Date(horaFin) : new Date(inicio.getTime() + duracion * 60 * 1000);
 
   datosBloqueo = {
     duracionMinutos: duracion,
     ejercicio,
     catalogo,
-    horaInicio: new Date().toISOString(),
+    horaInicio: inicio.toISOString(),
     horaFin: fin.toISOString(),
   };
 
@@ -130,10 +176,11 @@ function bloquear({ duracionMinutos, ejercicio, catalogo = [], alTerminar: callb
 
   cubrirPantallas();
   screen.on('display-added', alAgregarPantalla);
+  vigilanciaFoco = setInterval(mantenerAlFrente, 500);
 
   // El proceso principal es la autoridad del tiempo: al cumplirse la
   // duracion configurada, la pantalla se desbloquea (RF-22).
-  cuentaRegresiva = setTimeout(() => terminar(), duracion * 60 * 1000);
+  cuentaRegresiva = setTimeout(() => terminar(), Math.max(0, fin.getTime() - Date.now()));
 }
 
 /** Devuelve los datos actuales del bloqueo (para la ventana). */
@@ -176,6 +223,10 @@ function cerrar() {
   if (cuentaRegresiva) {
     clearTimeout(cuentaRegresiva);
     cuentaRegresiva = null;
+  }
+  if (vigilanciaFoco) {
+    clearInterval(vigilanciaFoco);
+    vigilanciaFoco = null;
   }
 
   screen.removeListener('display-added', alAgregarPantalla);

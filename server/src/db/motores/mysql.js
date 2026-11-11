@@ -12,6 +12,7 @@
  */
 
 const mysql = require('mysql2/promise');
+const { EJERCICIOS } = require('../catalogo-ejercicios');
 
 const ESQUEMA = `
 CREATE TABLE IF NOT EXISTS Usuario (
@@ -48,7 +49,8 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   id_ejercicio  INT AUTO_INCREMENT PRIMARY KEY,
   titulo        VARCHAR(100) NOT NULL,
   instrucciones TEXT         NOT NULL,
-  orden         INT          NOT NULL UNIQUE
+  orden         INT          NOT NULL UNIQUE,
+  duracion_segundos INT      NOT NULL DEFAULT 40
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS ProgresoRotacion (
@@ -92,6 +94,33 @@ class MotorMySQL {
     for (const sentencia of ESQUEMA.split(';')) {
       const sql = sentencia.trim();
       if (sql) await this.pool.query(sql);
+    }
+
+    // Bases creadas antes de que existiera la duracion de cada ejercicio.
+    const [columnas] = await this.pool.query(
+      `SELECT COUNT(*) AS total FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Ejercicio'
+          AND COLUMN_NAME = 'duracion_segundos'`
+    );
+    if (Number(columnas[0].total) === 0) {
+      await this.pool.query(
+        'ALTER TABLE Ejercicio ADD COLUMN duracion_segundos INT NOT NULL DEFAULT 40'
+      );
+      for (const e of EJERCICIOS) {
+        await this.pool.execute(
+          'UPDATE Ejercicio SET duracion_segundos = ? WHERE orden = ?',
+          [e.duracion_segundos, e.orden]
+        );
+      }
+    }
+
+    // Agrega los ejercicios del catalogo que falten, sin tocar los demas.
+    for (const e of EJERCICIOS) {
+      await this.pool.execute(
+        `INSERT IGNORE INTO Ejercicio (titulo, instrucciones, orden, duracion_segundos)
+         VALUES (?, ?, ?, ?)`,
+        [e.titulo, e.instrucciones, e.orden, e.duracion_segundos]
+      );
     }
   }
 

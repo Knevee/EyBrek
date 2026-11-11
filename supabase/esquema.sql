@@ -53,6 +53,14 @@ create table if not exists public.ejercicio (
   orden         integer not null unique
 );
 
+-- Tiempo del temporizador de cada ejercicio: leerlo y hacerlo.
+alter table public.ejercicio
+  add column if not exists duracion_segundos integer not null default 40;
+
+alter table public.ejercicio drop constraint if exists duracion_valida;
+alter table public.ejercicio
+  add constraint duracion_valida check (duracion_segundos between 10 and 300);
+
 -- ProgresoRotacion: ultimo ejercicio mostrado a cada usuario (RF-21).
 create table if not exists public.progreso_rotacion (
   id_usuario          uuid    primary key references public.perfil (id_usuario) on delete cascade,
@@ -64,14 +72,25 @@ create table if not exists public.progreso_rotacion (
 -- Catalogo inicial de ejercicios
 -- ---------------------------------------------------------------------
 
-insert into public.ejercicio (titulo, instrucciones, orden) values
-  ('Cerca y lejos', 'Mira tu pulgar 5 segundos y luego algo lejano, refléjalo 5 veces.', 1),
-  ('Parpadeo',      'Cierra los ojos y mantenlos así por 2 segundos. Repítelo 10 veces.', 2),
-  ('En círculos',   'Dibuja un círculo con la mirada, 3 veces a cada lado.', 3),
-  ('Palmas',        'Cubre tus ojos con las palmas tibias por 30 segundos.', 4)
+-- 12 ejercicios: con un descanso cada 2 horas de 8 a. m. a 9 p. m. hay
+-- unos 6 al dia, asi que ninguno se repite en el mismo dia.
+insert into public.ejercicio (titulo, instrucciones, orden, duracion_segundos) values
+  ('Cerca y lejos', 'Mira tu pulgar 5 segundos y luego algo lejano otros 5 segundos. Repítelo 5 veces.', 1, 60),
+  ('Parpadeo', 'Cierra los ojos y mantenlos así por 2 segundos. Repítelo 10 veces.', 2, 40),
+  ('En círculos', 'Dibuja un círculo grande con la mirada, despacio, 3 veces hacia cada lado.', 3, 40),
+  ('Palmas', 'Frota tus manos y cubre tus ojos con las palmas tibias durante 30 segundos.', 4, 40),
+  ('Regla 20-20-20', 'Mira un objeto que esté a unos 6 metros durante 20 segundos, sin mirar la pantalla.', 5, 30),
+  ('Ocho acostado', 'Dibuja con la mirada un ocho acostado, despacio, 5 veces en un sentido y 5 en el otro.', 6, 50),
+  ('Arriba y abajo', 'Sin mover la cabeza, mira hacia arriba 2 segundos y luego hacia abajo 2 segundos. Repítelo 10 veces.', 7, 50),
+  ('De lado a lado', 'Sin mover la cabeza, mira a la izquierda 2 segundos y luego a la derecha 2 segundos. Repítelo 10 veces.', 8, 50),
+  ('Diagonales', 'Mira la esquina de arriba a la derecha y luego la de abajo a la izquierda, 2 segundos cada una. Hazlo 5 veces y cambia de lado.', 9, 50),
+  ('Parpadeo rápido', 'Parpadea rápido y suave durante 15 segundos. Luego cierra los ojos y descansa 10 segundos.', 10, 35),
+  ('Apretar y abrir', 'Cierra los ojos con fuerza 3 segundos y luego ábrelos bien grandes 3 segundos. Repítelo 5 veces.', 11, 40),
+  ('Sigue tu dedo', 'Pon tu dedo índice a un brazo de distancia y acércalo despacio a la nariz sin dejar de mirarlo. Repítelo 5 veces.', 12, 45)
 on conflict (orden) do update
   set titulo = excluded.titulo,
-      instrucciones = excluded.instrucciones;
+      instrucciones = excluded.instrucciones,
+      duracion_segundos = excluded.duracion_segundos;
 
 
 -- ---------------------------------------------------------------------
@@ -117,14 +136,17 @@ create trigger al_crear_usuario
 -- evita que dos equipos avancen la rotacion a la vez.
 -- ---------------------------------------------------------------------
 
-create or replace function public.siguiente_ejercicio()
+-- Se borra antes de crearla porque cambian las columnas que devuelve.
+drop function if exists public.siguiente_ejercicio();
+create function public.siguiente_ejercicio()
 returns table (
-  id_ejercicio  integer,
-  titulo        text,
-  instrucciones text,
-  orden         integer,
-  posicion      integer,
-  total         integer
+  id_ejercicio      integer,
+  titulo            text,
+  instrucciones     text,
+  orden             integer,
+  duracion_segundos integer,
+  posicion          integer,
+  total             integer
 )
 language plpgsql
 security definer
@@ -177,6 +199,7 @@ begin
          v_siguiente.titulo,
          v_siguiente.instrucciones,
          v_siguiente.orden,
+         v_siguiente.duracion_segundos,
          (select count(*) from public.ejercicio e where e.orden <= v_siguiente.orden)::integer,
          v_total;
 end;
