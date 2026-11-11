@@ -67,7 +67,9 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   titulo        VARCHAR(100) NOT NULL,
   instrucciones TEXT         NOT NULL,
   orden         INT          NOT NULL UNIQUE,
-  duracion_segundos INT      NOT NULL DEFAULT 40
+  duracion_segundos INT      NOT NULL DEFAULT 40,
+  pasos         TEXT         NULL,
+  repeticiones  INT          NOT NULL DEFAULT 2
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

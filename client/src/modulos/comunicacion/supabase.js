@@ -347,7 +347,7 @@ async function obtenerSiguienteEjercicio() {
 /** Pide el catalogo completo de ejercicios. */
 async function obtenerCatalogo() {
   const lista = await ejecutar((supabase) =>
-    supabase.from('ejercicio').select('id_ejercicio, titulo, instrucciones, orden, duracion_segundos').order('orden')
+    supabase.from('ejercicio').select('id_ejercicio, titulo, instrucciones, orden, duracion_segundos, pasos, repeticiones').order('orden')
   );
 
   const ejercicios = (lista || []).map((ejercicio, indice) => ({

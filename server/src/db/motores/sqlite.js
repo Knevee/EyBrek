@@ -46,7 +46,9 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   titulo        TEXT    NOT NULL,
   instrucciones TEXT    NOT NULL,
   orden         INTEGER NOT NULL UNIQUE,
-  duracion_segundos INTEGER NOT NULL DEFAULT 40
+  duracion_segundos INTEGER NOT NULL DEFAULT 40,
+  pasos         TEXT,
+  repeticiones  INTEGER NOT NULL DEFAULT 2
 );
 
 CREATE TABLE IF NOT EXISTS ProgresoRotacion (
@@ -83,21 +85,33 @@ class MotorSQLite {
   async crearEsquema() {
     this.base.exec(ESQUEMA);
 
-    // Bases creadas antes de que existiera la duracion de cada ejercicio.
-    const columnas = this.base.prepare('PRAGMA table_info(Ejercicio)').all();
-    if (!columnas.some((columna) => columna.name === 'duracion_segundos')) {
-      this.base.exec('ALTER TABLE Ejercicio ADD COLUMN duracion_segundos INTEGER NOT NULL DEFAULT 40');
-      const fijar = this.base.prepare('UPDATE Ejercicio SET duracion_segundos = ? WHERE orden = ?');
-      for (const e of EJERCICIOS) fijar.run(e.duracion_segundos, e.orden);
+    // Bases creadas antes de que existieran estas columnas.
+    const columnas = this.base.prepare('PRAGMA table_info(Ejercicio)').all().map((c) => c.name);
+    const faltantes = {
+      duracion_segundos: 'INTEGER NOT NULL DEFAULT 40',
+      pasos: 'TEXT',
+      repeticiones: 'INTEGER NOT NULL DEFAULT 2',
+    };
+    for (const [columna, tipo] of Object.entries(faltantes)) {
+      if (!columnas.includes(columna)) {
+        this.base.exec(`ALTER TABLE Ejercicio ADD COLUMN ${columna} ${tipo}`);
+      }
     }
 
-    // Agrega los ejercicios del catalogo que falten, sin tocar los demas.
+    // Agrega los ejercicios que falten y completa los pasos de los que no
+    // los tengan, sin tocar los que alguien ya haya editado.
     const insertar = this.base.prepare(
-      `INSERT INTO Ejercicio (titulo, instrucciones, orden, duracion_segundos)
-       VALUES (?, ?, ?, ?) ON CONFLICT (orden) DO NOTHING`
+      `INSERT INTO Ejercicio (titulo, instrucciones, orden, duracion_segundos, pasos, repeticiones)
+       VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (orden) DO NOTHING`
+    );
+    const completar = this.base.prepare(
+      `UPDATE Ejercicio SET pasos = ?, repeticiones = ?, duracion_segundos = ?
+        WHERE orden = ? AND pasos IS NULL`
     );
     for (const e of EJERCICIOS) {
-      insertar.run(e.titulo, e.instrucciones, e.orden, e.duracion_segundos);
+      const pasos = JSON.stringify(e.pasos);
+      insertar.run(e.titulo, e.instrucciones, e.orden, e.duracion_segundos, pasos, e.repeticiones);
+      completar.run(pasos, e.repeticiones, e.duracion_segundos, e.orden);
     }
   }
 

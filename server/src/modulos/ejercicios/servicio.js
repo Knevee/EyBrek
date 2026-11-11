@@ -10,18 +10,35 @@
 const ejercicios = require('../acceso-a-datos/ejercicios');
 const progreso = require('../acceso-a-datos/progreso');
 
-/** Devuelve el catalogo completo sin tocar el progreso del usuario. */
-async function catalogo() {
-  const lista = await ejercicios.leerTodos();
-  return lista.map((ejercicio, indice) => ({
+/** Los pasos se guardan como texto JSON: se entregan ya como lista. */
+function leerPasos(texto) {
+  try {
+    const pasos = JSON.parse(texto || '[]');
+    return Array.isArray(pasos) ? pasos : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+/** Forma comun de un ejercicio en las respuestas de la API. */
+function formatear(ejercicio, indice, total) {
+  return {
     id_ejercicio: ejercicio.id_ejercicio,
     titulo: ejercicio.titulo,
     instrucciones: ejercicio.instrucciones,
     orden: ejercicio.orden,
     duracion_segundos: ejercicio.duracion_segundos,
+    pasos: leerPasos(ejercicio.pasos),
+    repeticiones: ejercicio.repeticiones,
     posicion: indice + 1,
-    total: lista.length,
-  }));
+    total,
+  };
+}
+
+/** Devuelve el catalogo completo sin tocar el progreso del usuario. */
+async function catalogo() {
+  const lista = await ejercicios.leerTodos();
+  return lista.map((ejercicio, indice) => formatear(ejercicio, indice, lista.length));
 }
 
 /**
@@ -50,15 +67,7 @@ async function siguienteEjercicio(idUsuario) {
   const elegido = lista[indice];
   await progreso.guardarUltimo(idUsuario, elegido.id_ejercicio);
 
-  return {
-    id_ejercicio: elegido.id_ejercicio,
-    titulo: elegido.titulo,
-    instrucciones: elegido.instrucciones,
-    orden: elegido.orden,
-    duracion_segundos: elegido.duracion_segundos,
-    posicion: indice + 1,
-    total: lista.length,
-  };
+  return formatear(elegido, indice, lista.length);
 }
 
 module.exports = { siguienteEjercicio, catalogo };

@@ -50,7 +50,9 @@ CREATE TABLE IF NOT EXISTS Ejercicio (
   titulo        VARCHAR(100) NOT NULL,
   instrucciones TEXT         NOT NULL,
   orden         INT          NOT NULL UNIQUE,
-  duracion_segundos INT      NOT NULL DEFAULT 40
+  duracion_segundos INT      NOT NULL DEFAULT 40,
+  pasos         TEXT         NULL,
+  repeticiones  INT          NOT NULL DEFAULT 2
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS ProgresoRotacion (
@@ -96,30 +98,37 @@ class MotorMySQL {
       if (sql) await this.pool.query(sql);
     }
 
-    // Bases creadas antes de que existiera la duracion de cada ejercicio.
+    // Bases creadas antes de que existieran estas columnas.
     const [columnas] = await this.pool.query(
-      `SELECT COUNT(*) AS total FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Ejercicio'
-          AND COLUMN_NAME = 'duracion_segundos'`
+      `SELECT COLUMN_NAME AS nombre FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Ejercicio'`
     );
-    if (Number(columnas[0].total) === 0) {
-      await this.pool.query(
-        'ALTER TABLE Ejercicio ADD COLUMN duracion_segundos INT NOT NULL DEFAULT 40'
-      );
-      for (const e of EJERCICIOS) {
-        await this.pool.execute(
-          'UPDATE Ejercicio SET duracion_segundos = ? WHERE orden = ?',
-          [e.duracion_segundos, e.orden]
-        );
+    const existentes = columnas.map((columna) => columna.nombre);
+    const faltantes = {
+      duracion_segundos: 'INT NOT NULL DEFAULT 40',
+      pasos: 'TEXT NULL',
+      repeticiones: 'INT NOT NULL DEFAULT 2',
+    };
+    for (const [columna, tipo] of Object.entries(faltantes)) {
+      if (!existentes.includes(columna)) {
+        await this.pool.query(`ALTER TABLE Ejercicio ADD COLUMN ${columna} ${tipo}`);
       }
     }
 
-    // Agrega los ejercicios del catalogo que falten, sin tocar los demas.
+    // Agrega los ejercicios que falten y completa los pasos de los que no
+    // los tengan, sin tocar los que alguien ya haya editado.
     for (const e of EJERCICIOS) {
+      const pasos = JSON.stringify(e.pasos);
       await this.pool.execute(
-        `INSERT IGNORE INTO Ejercicio (titulo, instrucciones, orden, duracion_segundos)
-         VALUES (?, ?, ?, ?)`,
-        [e.titulo, e.instrucciones, e.orden, e.duracion_segundos]
+        `INSERT IGNORE INTO Ejercicio
+           (titulo, instrucciones, orden, duracion_segundos, pasos, repeticiones)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [e.titulo, e.instrucciones, e.orden, e.duracion_segundos, pasos, e.repeticiones]
+      );
+      await this.pool.execute(
+        `UPDATE Ejercicio SET pasos = ?, repeticiones = ?, duracion_segundos = ?
+          WHERE orden = ? AND pasos IS NULL`,
+        [pasos, e.repeticiones, e.duracion_segundos, e.orden]
       );
     }
   }

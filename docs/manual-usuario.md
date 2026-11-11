@@ -90,14 +90,15 @@ Cuando se cumple el intervalo, la pantalla se bloquea:
 La pausa pasa por dos pantallas:
 
 1. **Descanso** (gato dormido): durante los primeros **40 segundos** verás la
-   hora actual, la fecha y la hora en que termina el descanso; a la derecha,
-   cuatro consejos para tu vista (si tienes activados los *Consejos en
-   pantalla*).
+   hora actual (por ejemplo, *9:12 p. m.*), la fecha y la hora en que termina
+   el descanso; a la derecha, cuatro consejos para tu vista (si tienes
+   activados los *Consejos en pantalla*).
 2. **Ejercicio para tus ojos** (gato con gafas): después aparece **un solo
-   ejercicio**, con su nombre y sus instrucciones. El temporizador dura lo
-   que toma leerlo y hacerlo (entre 30 segundos y 1 minuto, según el
-   ejercicio). Al terminarlo vuelves a la pantalla de descanso hasta que se
-   desbloquee.
+   ejercicio**, dividido en **4 pasos**. Los pasos se ven en la cuadrícula y
+   se resalta el que toca; el temporizador grande marca los segundos de ese
+   paso. Los 4 pasos se repiten **2 o 3 rondas**, según el ejercicio, con
+   5 segundos para descansar los ojos entre una ronda y otra. Al terminar
+   vuelves a la pantalla de descanso hasta que se desbloquee.
 
 ![Pantalla de ejercicios](imagenes/pantalla-ejercicios.png)
 

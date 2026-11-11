@@ -42,7 +42,7 @@
     <!-- Figura 6: momento de la pausa -->
     <div class="solo-descanso columna-textos">
       <p class="etiqueta">Es momento de una pausa</p>
-      <p class="reloj" id="reloj">00:00</p>
+      <p class="reloj"><span id="reloj">12:00</span><span class="reloj-sufijo" id="reloj-sufijo">a. m.</span></p>
       <p class="fecha" id="fecha"></p>
       <p class="chip-fin" id="texto-fin">El descanso termina pronto</p>
       <p class="lema">Descansa hoy,<br />para ver un mejor mañana</p>
@@ -51,9 +51,9 @@
 
     <!-- Figura 7: ejercicios para los ojos -->
     <div class="solo-ejercicios columna-textos">
-      <p class="etiqueta">Tiempo para tu ejercicio</p>
-      <p class="reloj" id="temporizador">00:40</p>
-      <p class="lema">Sin prisa, tus ojos lo agradecerán</p>
+      <p class="etiqueta" id="ronda">Ronda 1 de 3</p>
+      <p class="reloj" id="temporizador">00:05</p>
+      <p class="lema" id="lema-ejercicio">Paso 1 de 4</p>
       <img class="gato gato-gafas" src="../../assets/gato-gafas.png" alt="Gato con gafas sobre un cojín" />
     </div>
   </section>
@@ -99,9 +99,9 @@
       <div class="solo-ejercicios">
         <p class="antetitulo">Ejercicio para tus ojos</p>
         <h1 id="titulo-ejercicio">Cerca y lejos</h1>
-        <p class="subtitulo">Sigue los pasos con calma y sin forzar la vista</p>
+        <p class="subtitulo" id="instrucciones">Sigue cada paso con calma y sin forzar la vista</p>
         <div class="divisor"><span>&#9829;</span></div>
-        <p class="instrucciones" id="instrucciones"></p>
+        <div class="cuadricula" id="pasos"></div>
         <div class="barra-tiempo" aria-hidden="true"><span id="barra-tiempo"></span></div>
       </div>
     </div>

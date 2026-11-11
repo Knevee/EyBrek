@@ -309,6 +309,10 @@ describe('API de EyBrek', () => {
     assert.ok(ejercicios.length >= 12, 'El catalogo debe tener al menos 12 ejercicios');
     for (const ejercicio of ejercicios) {
       assert.ok(ejercicio.duracion_segundos >= 10, `${ejercicio.titulo} no tiene duracion`);
+      // Cada ejercicio se divide en 4 pasos y se repite 2 o 3 veces.
+      assert.equal(ejercicio.pasos.length, 4, `${ejercicio.titulo} debe tener 4 pasos`);
+      assert.ok(ejercicio.pasos.every((paso) => paso.texto && paso.segundos > 0));
+      assert.ok([2, 3].includes(ejercicio.repeticiones), `${ejercicio.titulo}: repeticiones`);
     }
   });
 
